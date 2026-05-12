@@ -87,8 +87,8 @@ async function buildSop(file) {
     OWNER: escapeHtml(fm.owner || 'Paul Tyrrell'),
     STATUS: escapeHtml(fm.status || 'draft'),
     SOURCE_HTML: sourceHtml(fm.source),
-    CREATED: escapeHtml(fm.created || ''),
-    UPDATED: escapeHtml(fm.updated || fm.created || ''),
+    CREATED: escapeHtml(fm.created instanceof Date ? fm.created.toISOString().slice(0,10) : (fm.created || '')),
+    UPDATED: escapeHtml(fm.updated instanceof Date ? fm.updated.toISOString().slice(0,10) : (fm.updated || (fm.created instanceof Date ? fm.created.toISOString().slice(0,10) : (fm.created || '')))),
     TAGS_HTML: tagsHtml(fm.tags || []),
     EXTRA_FRONTMATTER_HTML: extraFrontmatterHtml(fm),
     BODY_HTML: bodyHtml,
@@ -103,6 +103,7 @@ async function buildSop(file) {
   await mkdir(OUT_SOPS, { recursive: true });
   await writeFile(join(OUT_SOPS, `${slug}.html`), page, 'utf8');
 
+  const toStr = v => v == null ? '' : (v instanceof Date ? v.toISOString().slice(0,10) : String(v));
   return {
     slug,
     title: fm.title || slug,
@@ -110,8 +111,8 @@ async function buildSop(file) {
     owner: fm.owner || 'Paul Tyrrell',
     status: fm.status || 'draft',
     tags: fm.tags || [],
-    created: fm.created || '',
-    updated: fm.updated || fm.created || '',
+    created: toStr(fm.created),
+    updated: toStr(fm.updated || fm.created),
     file,
   };
 }
@@ -143,7 +144,7 @@ async function buildIndex(allSops) {
       if (a.status === 'live') return -1;
       if (b.status === 'live') return 1;
     }
-    return (b.updated || b.created || '').localeCompare(a.updated || a.created || '');
+    return String(b.updated || b.created || '').localeCompare(String(a.updated || a.created || ''));
   });
   const tagSet = new Set();
   allSops.forEach(s => (s.tags || []).forEach(t => tagSet.add(t)));

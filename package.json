@@ -1,9 +1,11 @@
 {
   "name": "open-claw-sops",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Open Claw SOP playbook — markdown sources, HTML build, GitHub Pages deploy. SOPs created by Alfred from calls (Loom / Fathom / Zoom / Grain) or by hand.",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "watch": "node scripts/build.mjs --watch",
