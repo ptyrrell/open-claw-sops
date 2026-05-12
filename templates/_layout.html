@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="{{VERSION}}" />
+<title>{{TITLE}} · Open Claw SOPs</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Open Claw <b>SOPs</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+{{CONTENT}}
+</main>
+<footer class="site-footer">
+  Open Claw SOPs · v{{VERSION}} · Built {{BUILT_AT}} · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>

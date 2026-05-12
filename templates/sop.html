@@ -1,0 +1,22 @@
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags">{{TAGS_HTML}}</div>
+  </div>
+  <h1 class="sop-title">{{TITLE}}</h1>
+  <div class="sop-summary">{{SUMMARY}}</div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>{{OWNER}}</dd>
+    <dt>Status</dt><dd><span class="status status-{{STATUS}}">{{STATUS}}</span></dd>
+    <dt>Source</dt><dd>{{SOURCE_HTML}}</dd>
+    <dt>Created</dt><dd>{{CREATED}}</dd>
+    <dt>Updated</dt><dd>{{UPDATED}}</dd>
+    {{EXTRA_FRONTMATTER_HTML}}
+  </dl>
+  <div class="sop-body">
+    {{BODY_HTML}}
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/{{SLUG}}.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP {{SLUG}}: ..."</em></div>
+  </div>
+</article>
