@@ -27,345 +27,310 @@
 <article class="sop">
   <div class="sop-meta">
     <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
-    <div class="sop-tags"><span class="sop-card-tag">alfred</span><span class="sop-card-tag">open-claw</span><span class="sop-card-tag">playbook</span><span class="sop-card-tag">meta</span></div>
+    <div class="sop-tags"><span class="sop-card-tag">alfred</span><span class="sop-card-tag">open-claw</span><span class="sop-card-tag">operating-manual</span><span class="sop-card-tag">channels</span><span class="sop-card-tag">tools</span><span class="sop-card-tag">freshness</span></div>
   </div>
   <h1 class="sop-title">How to get the most out of Alfred</h1>
-  <div class="sop-summary">Channels, phrasings, freshness model, and the 83 tools — the playbook for using Alfred without the friction. Open this anytime you forget what he can do.</div>
+  <div class="sop-summary">Alfred is your Open Claw assistant — one brain, four channels (SMS, voice, iMessage, web chat), 92 tools. This SOP shows you exactly how to talk to him, what he can see, when his data is fresh vs stale, and the power patterns that unlock the most value per message.
+</div>
   <dl class="sop-frontmatter">
     <dt>Owner</dt><dd>Paul Tyrrell</dd>
     <dt>Status</dt><dd><span class="status status-live">live</span></dd>
-    <dt>Source</dt><dd><span class="sop-card-tag">manual</span> <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">Open Claw — Alfred operating manual</a></dd>
-    <dt>Created</dt><dd>2026-05-12</dd>
-    <dt>Updated</dt><dd>2026-05-12</dd>
-    
+    <dt>Source</dt><dd><em>—</em></dd>
+    <dt>Created</dt><dd>2026-05-13</dd>
+    <dt>Updated</dt><dd>2026-05-13</dd>
+    <dt>audience</dt><dd>Paul (and any future operator of the Open Claw stack)</dd>
   </dl>
   <div class="sop-body">
-    <h2>When to use this SOP</h2>
-<p>Open this when you&#39;ve forgotten what Alfred can do, when a query feels slower than it should, or when something feels missing (e.g. &quot;why can&#39;t Alfred see X?&quot;). It&#39;s the operating manual for getting maximum signal out of the Open Claw stack with minimum friction.</p>
-<h2>Outcome</h2>
-<p>You know which <strong>channel</strong> to reach Alfred on, which <strong>phrasing</strong> triggers the right tool, which <strong>integrations are auto-fresh</strong> vs <strong>on-demand</strong>, and how to <strong>add new capabilities</strong> when something&#39;s missing. You stop accidentally talking to Alfred like a search engine and start using him like a chief of staff.</p>
-<h2>Prerequisites</h2>
-<ul>
-<li>Alfred AU number <code>+61 468 072 882</code> (voice + SMS)</li>
-<li>Web client at <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/">fi-alfred-chat</a></li>
-<li>Public status: <a href="https://paultyrrell.dev/alfred-monitor.html">paultyrrell.dev/alfred-monitor.html</a></li>
-<li>Spawn dashboard: <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/">fi-agent-dashboard</a></li>
-<li>This SOP playbook: <a href="https://ptyrrell.github.io/open-claw-sops/">ptyrrell.github.io/open-claw-sops</a></li>
-</ul>
-<h2>Steps</h2>
-<h3>1. Pick the right channel</h3>
+    <h1>How to get the most out of Alfred</h1>
+<p>Alfred — your Open Claw assistant — is a single Claude-backed brain on your Mac
+Studio with <strong>92 tools</strong>, a stable Cloudflare Named Tunnel
+(<code>alfred.paultyrrell.dev</code>), and four ways to reach him:</p>
 <table>
 <thead>
 <tr>
-<th>Need</th>
 <th>Channel</th>
-<th>Why</th>
+<th>Number / URL</th>
+<th>Cost</th>
+<th>Best for</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Quick lookup, short question, on the move</td>
-<td><strong>SMS</strong> to +61 468 072 882</td>
-<td>Fastest, no app to open, persists in chat history</td>
+<td><strong>SMS (AU)</strong></td>
+<td><code>+61 468 156 287</code></td>
+<td>US$0.04/msg</td>
+<td>Anywhere reception works</td>
 </tr>
 <tr>
-<td>You&#39;re driving, hands busy, want a verbal answer</td>
-<td><strong>Voice</strong> call +61 468 072 882</td>
-<td>Voice tools are blocklisted for slow operations (no SOP build, no agent spawn) — keeps replies &lt;12s</td>
+<td><strong>SMS (US)</strong></td>
+<td><code>+1 *** ***</code> (TWILIO_VOICE_FROM)</td>
+<td>US$0.0079/msg</td>
+<td>When AU number rate-limits</td>
 </tr>
 <tr>
-<td>Long task, paste big content, need code/markdown formatting</td>
-<td><strong>Web chat</strong> <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/">fi-alfred-chat</a></td>
-<td>Full-width text, persistent session, file paste, no SMS character limit</td>
+<td><strong>Voice (AU)</strong></td>
+<td><code>+61 468 072 882</code></td>
+<td>per minute</td>
+<td>Hands-free in the car</td>
 </tr>
 <tr>
-<td>Async work that takes hours</td>
-<td><strong>Spawn a Cursor Cloud Agent</strong> (&quot;Alfred, spawn a cursor agent to ...&quot;)</td>
-<td>Background work in a real repo, returns a PR. Visible at fi-agent-dashboard</td>
+<td><strong>iMessage</strong></td>
+<td>Your own iCloud-paired numbers</td>
+<td><strong>free</strong></td>
+<td>Auto-preferred for known iMessage contacts</td>
+</tr>
+<tr>
+<td><strong>Web chat</strong></td>
+<td><a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com">https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com</a></td>
+<td>free</td>
+<td>Long messages, file context</td>
 </tr>
 </tbody></table>
+<p>Every channel hits the same brain. State is shared across them.</p>
+<hr>
+<h2>1. The freshness model — know what Alfred can see</h2>
+<p>Alfred no longer guesses about how stale his data is. The <code>/health</code>
+endpoint exposes a <code>data_freshness</code> panel with one entry per integration:</p>
+<pre><code class="language-text">zoom         fresh   (1h ago)   expected ≤2h
+fathom       fresh   (8m ago)   expected ≤15m
+hubspot      fresh   (16h ago)  expected ≤24h
+aircall_sdr  fresh   (18h ago)  expected ≤24h
+grain        live    (no cron — call-on-demand only)
+</code></pre>
+<p>Statuses: <code>fresh</code> (≤1.5× expected), <code>lagging</code> (≤4×), <code>stale</code> (&gt;4×, cron broken),
+<code>live</code> (no cache exists, always live), <code>unknown</code> (log unreadable).</p>
+<p><strong>Use it whenever it matters.</strong> Just ask:</p>
 <blockquote>
-<p><strong>Same brain across all three</strong> — Alfred shares one SQLite memory, so a SMS conversation continues seamlessly on the web client and vice versa.</p>
+<p>&quot;Alfred, are all your data sources fresh?&quot;</p>
 </blockquote>
-<h3>2. Phrase for the tool you actually want</h3>
-<p>Alfred picks tools based on the verbs and nouns you use. These phrasings reliably trigger the right tool:</p>
+<p>He&#39;ll call <code>get_data_freshness</code> and tell you in one line. If anything is
+<code>stale</code>, the answer ends with the exact <code>launchctl kickstart</code> command to
+revive the cron.</p>
+<hr>
+<h2>2. The four channels in detail</h2>
+<h3>2a. SMS (Twilio)</h3>
+<p>Default outbound channel for any number not in your iMessage allowlist.
+US$0.04 each — adds up at scale. Inbound is webhook-triggered, so messages
+land in Alfred&#39;s brain instantly.</p>
+<h3>2b. Voice (AU number <code>+61 468 072 882</code>)</h3>
+<ul>
+<li>Voice: <code>Polly.Russell-Neural</code> (Australian male).</li>
+<li>Greeting: &quot;Alfred here, Paul — your Open Claw assistant. How can I help?&quot;</li>
+<li><strong>Tools available on voice</strong>: most of them, except a <code>VOICE_TOOL_BLOCKLIST</code>
+of slow ones (SOP generation, large roadmap fetches, ops-dashboard pulls).
+This keeps voice latency under ~3s while still letting Alfred check your
+calendar, send SMS, summarise meetings, etc.</li>
+</ul>
+<h3>2c. iMessage (NEW in this build)</h3>
+<ul>
+<li><p><strong>Sending</strong>: works today via <code>osascript</code>. Alfred&#39;s outbound <code>_send_sms</code>
+automatically prefers iMessage when the recipient is iMessage-capable —
+saves US$0.04 per message.</p>
+</li>
+<li><p><strong>Receiving</strong>: poller is wired but needs Full Disk Access on the launchd
+Python binary. Ask Alfred:</p>
+<blockquote>
+<p>&quot;Alfred, how do I enable iMessage receive?&quot;</p>
+</blockquote>
+<p>He&#39;ll print a 7-step FDA setup guide via <code>imessage_setup_help</code>.</p>
+</li>
+<li><p><strong>Routing rules</strong> (in priority order):</p>
+<ol>
+<li>Number is in <code>IMESSAGE_PREFERRED_NUMBERS</code> env var (default: your mobile)</li>
+<li>chat.db has prior <code>service=&#39;iMessage&#39;</code> thread with this number (if FDA OK)</li>
+<li>Otherwise → fall back to Twilio SMS</li>
+</ol>
+</li>
+</ul>
+<h3>2d. Web chat</h3>
+<p>Heroku-hosted React shell talking to Alfred via <code>/chat</code>. No SMS cost. Best for
+multi-paragraph context, file paste, or when you&#39;re at a desk.</p>
+<hr>
+<h2>3. Power patterns — phrasings that unlock the most value</h2>
 <table>
 <thead>
 <tr>
-<th>You want</th>
-<th>Say</th>
-<th>Tool used</th>
+<th>You say</th>
+<th>Alfred does</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Today&#39;s calendar</td>
-<td>&quot;What&#39;s on today?&quot; or &quot;next meeting?&quot;</td>
-<td><code>get_todays_events</code></td>
+<td>&quot;What&#39;s my next meeting?&quot;</td>
+<td>calendar tools (live Google Calendar)</td>
 </tr>
 <tr>
-<td>Recent Zoom calls (live)</td>
-<td>&quot;What zoom calls did I have today?&quot;</td>
-<td><code>zoom_recent_meetings_live</code> (no cache lag)</td>
+<td>&quot;Did Ceri respond?&quot;</td>
+<td><code>list_recent_messages</code> + Twilio history</td>
 </tr>
 <tr>
-<td>Cached Zoom calls + auto-sync</td>
-<td>&quot;List my recent Zoom recordings&quot;</td>
-<td><code>list_zoom_recordings</code> (auto-syncs last 7 days first)</td>
+<td>&quot;Summarise yesterday&#39;s Zoom calls&quot;</td>
+<td><code>list_zoom_recordings</code> (auto-syncs first)</td>
 </tr>
 <tr>
-<td>Search across Zoom transcripts</td>
-<td>&quot;Find what Ceri said about pricing&quot;</td>
-<td><code>search_zoom_transcripts</code></td>
+<td>&quot;What&#39;s our pipeline this month?&quot;</td>
+<td><code>read_ops_dashboard section=pipeline</code></td>
 </tr>
 <tr>
-<td>Pull a specific Zoom call</td>
-<td>&quot;Get the transcript for the Forbo meeting&quot;</td>
-<td><code>get_zoom_transcript</code></td>
+<td>&quot;How is SDR tracking this week?&quot;</td>
+<td><code>read_ops_dashboard section=sdr</code></td>
 </tr>
 <tr>
-<td>Recent Fathom meetings</td>
-<td>&quot;What were my last 5 Fathom calls?&quot;</td>
-<td><code>list_fathom_meetings</code></td>
+<td>&quot;How is Fiona performing?&quot;</td>
+<td><code>list_fiona_grades</code></td>
 </tr>
 <tr>
-<td>Pipeline status</td>
-<td>&quot;Where&#39;s the pipeline at?&quot;</td>
-<td><code>pipeline_briefing</code></td>
+<td>&quot;What does the FI-24 spec say about walk order?&quot;</td>
+<td><code>read_roadmap_spec slug=fi-24-...</code></td>
 </tr>
 <tr>
-<td>Lead quality</td>
-<td>&quot;Run the ICP audit&quot;</td>
-<td><code>run_icp_audit</code></td>
+<td>&quot;What agents are running in Open Claw?&quot;</td>
+<td><code>list_open_claw_agents filter_status=live</code></td>
 </tr>
 <tr>
-<td>Convert a recording to SOP</td>
-<td>&quot;Turn this loom into an SOP: <url>&quot;</td>
-<td><code>sop_from_loom</code></td>
+<td>&quot;Are all data sources fresh?&quot;</td>
+<td><code>get_data_freshness</code></td>
 </tr>
 <tr>
-<td>Convert pasted notes to SOP</td>
-<td>&quot;Make an SOP titled X from this transcript: ...&quot;</td>
-<td><code>sop_from_transcript</code></td>
+<td>&quot;iMessage Sarah saying I&#39;ll be 10 min late&quot;</td>
+<td><code>send_imessage</code> directly (free)</td>
 </tr>
 <tr>
-<td>List existing SOPs</td>
-<td>&quot;Show me my SOPs&quot;</td>
+<td>&quot;Turn this Loom into an SOP: <url>&quot;</td>
+<td><code>sop_from_loom</code> → commits to GitHub Pages</td>
+</tr>
+<tr>
+<td>&quot;List my SOPs&quot;</td>
 <td><code>list_sops</code></td>
 </tr>
-<tr>
-<td>Spawn a code agent</td>
-<td>&quot;Spawn a cursor agent in repo X to ...&quot;</td>
-<td><code>cursor_spawn_agent</code></td>
-</tr>
-<tr>
-<td>Recent emails</td>
-<td>&quot;What emails came in this morning?&quot;</td>
-<td><code>get_recent_emails</code></td>
-</tr>
-<tr>
-<td>Send an email</td>
-<td>&quot;Email Ceri to thank her for the call&quot;</td>
-<td><code>send_email</code></td>
-</tr>
-<tr>
-<td>Pull web content</td>
-<td>&quot;What does this page say: <url>?&quot;</td>
-<td><code>web_fetch</code> (static) or <code>web_render</code> (SPA)</td>
-</tr>
-<tr>
-<td>Recent obsidian notes</td>
-<td>&quot;What did I write in Obsidian today?&quot;</td>
-<td><code>obsidian_recent</code></td>
-</tr>
-<tr>
-<td>Capture into Obsidian daily</td>
-<td>&quot;Note that Ceri wants demo Friday 3pm&quot;</td>
-<td><code>obsidian_append_to_daily</code></td>
-</tr>
 </tbody></table>
-<h3>3. Know what&#39;s auto-fresh vs on-demand</h3>
+<h3>Anti-patterns (they cost more without buying you more)</h3>
+<ul>
+<li><strong>Don&#39;t</strong> paraphrase what you want — be specific. &quot;Check pipeline&quot; makes
+Alfred call multiple tools; &quot;Read the ops pipeline section for May&quot; goes
+straight to one.</li>
+<li><strong>Don&#39;t</strong> ask for &quot;all calls today&quot; without a channel hint — he&#39;ll
+cross-reference Zoom, Fathom, Aircall, and SMS. Say &quot;my Zoom calls&quot; or
+&quot;my SDR calls&quot; to skip the wide search.</li>
+<li><strong>Don&#39;t</strong> ask Alfred to do anything async over voice (writing SOPs, posting
+PRs, big roadmap fetches). They&#39;re in the voice blocklist for a reason —
+the connection times out before Claude finishes.</li>
+</ul>
+<hr>
+<h2>4. The 92 tools, grouped</h2>
+<p>Alfred has <strong>92 registered tools</strong>. The big new ones from this build:</p>
+<h3>Cross-app readers (Phase 2)</h3>
+<ul>
+<li><code>read_ops_dashboard(section, month?)</code> — fi-ops-dashboard live data</li>
+<li><code>list_open_claw_agents(filter_status?)</code> — agent registry</li>
+<li><code>list_fiona_calls(limit)</code> / <code>list_fiona_grades(limit)</code> — IVR transcripts/grades</li>
+<li><code>list_roadmap_specs()</code> / <code>read_roadmap_spec(slug, max_chars?)</code> — roadmap</li>
+</ul>
+<h3>Health / introspection</h3>
+<ul>
+<li><code>get_data_freshness(as_summary?)</code> — one-line or full panel</li>
+</ul>
+<h3>iMessage</h3>
+<ul>
+<li><code>send_imessage(to, body)</code> — direct (free)</li>
+<li><code>imessage_setup_help()</code> — FDA setup guide</li>
+</ul>
+<h3>SOPs</h3>
+<ul>
+<li><code>sop_from_loom(url)</code> / <code>sop_from_transcript(text)</code> — generate via Claude</li>
+<li><code>list_sops(limit)</code> — index</li>
+</ul>
+<h3>Pre-existing strengths</h3>
+<p>Calendar, Gmail, Notion, Linear, GitHub PRs, HubSpot CRM, Stripe, Apple Notes,
+Loom, Fathom, Grain, Aircall, Zoom, Cursor Cloud Agent spawning, system facts
+memory, voice, SMS, WhatsApp.</p>
+<hr>
+<h2>5. The decision tree (when in doubt)</h2>
+<pre><code>Is the question about live status of an external system?
+├── Pipeline / sales / SDR / researchers   → read_ops_dashboard
+├── Agents in Open Claw                    → list_open_claw_agents
+├── Voice IVR (Fiona)                      → list_fiona_calls / list_fiona_grades
+├── Spec / roadmap docs                    → list_roadmap_specs → read_roadmap_spec
+└── Integration up-to-date?                → get_data_freshness
+
+Is the question about Paul&#39;s own data?
+├── Calendar / next meeting                → calendar_*
+├── Recent calls (Zoom / Fathom / Aircall) → list_*_recordings (auto-sync built in)
+├── Pipeline deals                         → hubspot_*
+└── Notes / SOPs                           → list_sops / apple_notes_*
+
+Sending something out?
+├── Known iMessage number                  → automatic (no extra step)
+├── Phone number you&#39;re not sure about     → send_sms (Alfred routes smartly)
+└── Group / business contact               → send_imessage if you know they have it
+</code></pre>
+<hr>
+<h2>6. Costs at a glance</h2>
 <table>
 <thead>
 <tr>
-<th>Integration</th>
-<th>Sync model</th>
-<th>Cron</th>
-<th>What to expect</th>
+<th>Channel</th>
+<th>Cost per message</th>
+<th>When Alfred picks it</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>Zoom recordings</strong></td>
-<td>Auto-pull every <strong>2 hours</strong> (last 7 days)</td>
-<td><code>com.alfred.zoom-sync</code></td>
-<td>Today&#39;s call available within ~2h after Zoom finishes processing</td>
+<td>iMessage</td>
+<td>$0</td>
+<td>Recipient in IMESSAGE_PREFERRED_NUMBERS or chat.db has iMessage history</td>
 </tr>
 <tr>
-<td><strong>Fathom meetings</strong></td>
-<td>Auto-poll every <strong>15 minutes</strong> (last 12h)</td>
-<td><code>com.alfred.meeting-followup</code></td>
-<td>Available 5-15 min after meeting ends</td>
+<td>Twilio SMS (AU)</td>
+<td>US$0.04</td>
+<td>Default fallback for AU numbers</td>
 </tr>
 <tr>
-<td><strong>HubSpot deals</strong></td>
-<td>Delta sync <strong>daily</strong> (25h window)</td>
-<td><code>com.fieldinsight.alfred.hubspot-sync</code></td>
-<td>Yesterday&#39;s deals + today&#39;s updates</td>
+<td>Twilio SMS (US)</td>
+<td>US$0.0079</td>
+<td>Explicit <code>from_=TWILIO_VOICE_FROM</code></td>
 </tr>
 <tr>
-<td><strong>SDR calls (Aircall)</strong></td>
-<td>Daily transcript pull</td>
-<td><code>com.alfred.sdr-transcripts</code></td>
-<td>New cold-call transcripts overnight</td>
-</tr>
-<tr>
-<td><strong>Calendar (Google)</strong></td>
-<td>Live API on each request</td>
-<td>—</td>
-<td>Always current</td>
-</tr>
-<tr>
-<td><strong>Gmail</strong></td>
-<td>Live API on each request</td>
-<td>—</td>
-<td>Always current</td>
-</tr>
-<tr>
-<td><strong>Obsidian</strong></td>
-<td>Live filesystem read on each request</td>
-<td>—</td>
-<td>Always current</td>
-</tr>
-<tr>
-<td><strong>Friday call review</strong></td>
-<td>Friday 5pm AEST SMS</td>
-<td><code>com.alfred.weekly-call-review</code></td>
-<td>Numbered shortlist for SOP creation</td>
-</tr>
-<tr>
-<td><strong>Morning briefing</strong></td>
-<td>Daily 7am SMS</td>
-<td><code>com.alfred.morning-briefing</code></td>
-<td>Calendar + pipeline + ICP overnight</td>
+<td>Twilio Voice</td>
+<td>per minute</td>
+<td>Inbound only (you call him)</td>
 </tr>
 </tbody></table>
+<p>To force iMessage for more numbers, add them to <code>IMESSAGE_PREFERRED_NUMBERS</code>
+in <code>.env</code> (CSV, E.164):</p>
+<pre><code>IMESSAGE_PREFERRED_NUMBERS=+61401026347,+61400000001,+61400000002
+</code></pre>
+<hr>
+<h2>7. FAQ</h2>
+<p><strong>Q: How do I know if Alfred is using fresh data?</strong></p>
 <blockquote>
-<p><strong>Check freshness anytime</strong> by hitting <code>https://alfred.paultyrrell.dev/health</code> — the <code>data_freshness</code> block shows when each cached source was last updated and flags <code>lagging</code> (&gt;3 days) or <code>stale</code> (&gt;14 days).</p>
+<p>Ask &quot;data freshness?&quot; — one line back, with stale crons flagged.</p>
 </blockquote>
-<h3>4. Use Alfred for what he&#39;s actually good at</h3>
-<table>
-<thead>
-<tr>
-<th>Strong</th>
-<th>Weak / overkill</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Multi-step orchestration</strong> (&quot;Find Ceri&#39;s email → check her last 3 calls → draft a follow-up&quot;)</td>
-<td>Pure factual recall (&quot;What&#39;s the capital of Bolivia?&quot; — use Google)</td>
-</tr>
-<tr>
-<td><strong>Cross-source synthesis</strong> (&quot;Did Ceri mention pricing on any call?&quot; — searches Zoom + Fathom + Gmail)</td>
-<td>Real-time stock prices / weather (use a real API)</td>
-</tr>
-<tr>
-<td><strong>Acting on your data</strong> (send email, write SOP, spawn agent, update pipeline)</td>
-<td>One-line jokes, fan fiction, bedtime stories</td>
-</tr>
-<tr>
-<td><strong>Context that persists</strong> (&quot;Remember Ceri prefers Tuesday mornings&quot; — stored across all channels)</td>
-<td>Stuff he has no tool for (no Slack tool yet, no Linear yet)</td>
-</tr>
-<tr>
-<td><strong>Async work delegation</strong> (&quot;Spawn an agent to refactor X repo by EOD&quot;)</td>
-<td>Streaming long content (he batches; web chat is best for that)</td>
-</tr>
-</tbody></table>
-<h3>5. Power patterns that 10x output</h3>
-<ul>
-<li><strong>Stack tools in one ask:</strong> &quot;Read the FieldInsight + Forbo zoom transcript, draft a follow-up email to Adam Gill confirming next steps, send it.&quot; → Alfred chains <code>search_zoom_transcripts</code> → <code>get_zoom_transcript</code> → <code>send_email</code> in one turn.</li>
-<li><strong>Delegate, don&#39;t pilot:</strong> &quot;Spawn a cursor agent to add X feature to fi-ops-dashboard, branch <code>feat/x</code>, open a PR.&quot; → Background work, you keep moving.</li>
-<li><strong>Capture to Obsidian as you think:</strong> &quot;Note in today&#39;s daily: SSA wants AS1851 customisation by end of June.&quot; → Becomes searchable forever.</li>
-<li><strong>Use SOPs to compound:</strong> Every time a process happens twice, ask Alfred to turn the call/notes into an SOP. Future-you stops re-thinking it.</li>
-<li><strong>Friday review loop:</strong> When the Friday 5pm SMS arrives with the week&#39;s calls, reply with numbers. Each picked call becomes an SOP. Knowledge compounds weekly with zero effort.</li>
-</ul>
-<h3>6. Anti-patterns to avoid</h3>
-<ul>
-<li>❌ &quot;What was that thing I said about pricing on a call last month?&quot; — be specific: <em>which</em> call, <em>which</em> prospect. Vague queries trigger guesses.</li>
-<li>❌ Calling on voice for tasks that take &gt;12s (SOP build, agent spawn, ICP audit) — those are blocklisted on voice and he&#39;ll tell you to text instead.</li>
-<li>❌ Pasting a 20-page transcript over SMS — use the web chat for anything &gt;800 chars.</li>
-<li>❌ Asking Alfred to &quot;remember X forever&quot; without storing it — use <code>obsidian_append_to_daily</code> or have him write it to a permanent fact in memory.</li>
-<li>❌ Treating spawned Cursor agents as instant — they take 3-30 minutes. Check status via fi-agent-dashboard or &quot;Alfred, what&#39;s the status of agent bc-xxx?&quot;</li>
-</ul>
-<h2>Decision tree</h2>
-<table>
-<thead>
-<tr>
-<th>Situation</th>
-<th>Do</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>You don&#39;t know the right tool</td>
-<td>Just describe what you want — Alfred picks. He has 83.</td>
-</tr>
-<tr>
-<td>Reply seems wrong / out of date</td>
-<td>Check <code>https://alfred.paultyrrell.dev/health</code> <code>data_freshness</code> panel. If a source is <code>stale</code>, the cron may have failed — restart it via <code>launchctl kickstart -k gui/$(id -u)/com.alfred.&lt;name&gt;</code></td>
-</tr>
-<tr>
-<td>Reply takes &gt;30s</td>
-<td>He&#39;s likely chaining 3+ tools. Web chat is fine; SMS will auto-split if needed; voice will time out — switch to SMS.</td>
-</tr>
-<tr>
-<td>You want background work</td>
-<td>&quot;Spawn a cursor agent to ...&quot; — never wait synchronously for it.</td>
-</tr>
-<tr>
-<td>You want to add a new capability</td>
-<td>Describe what&#39;s missing. Alfred can spawn an agent to add a new tool to himself (yes, really — he can edit <code>~/Alfred/alfred/tools/</code> and <code>brain.py</code>).</td>
-</tr>
-<tr>
-<td>You&#39;re worried something broke</td>
-<td><code>https://paultyrrell.dev/alfred-monitor.html</code> shows live status. Or text &quot;Alfred, are you ok?&quot; and he&#39;ll self-check.</td>
-</tr>
-</tbody></table>
-<h2>Common objections / FAQ</h2>
-<p><strong>Q: How do I know which integrations Alfred can actually see?</strong>
-A: Hit <code>https://alfred.paultyrrell.dev/capabilities</code> (with your auth token) — returns the full list of 83 tools grouped by domain. Or ask: &quot;What can you do with Zoom?&quot; — he&#39;ll list the relevant tools.</p>
-<p><strong>Q: Why does Alfred sometimes &quot;say&quot; Claude or Anthropic?</strong>
-A: He shouldn&#39;t anymore — the brand-pairing prompt at the top of <code>ALFRED_SYSTEM_PROMPT</code> tells him &quot;you are Alfred, your Open Claw assistant; Claude/Anthropic are implementation details, not the brand&quot;. If he slips, it&#39;s a system prompt regression — ping the brain config.</p>
-<p><strong>Q: Where does Alfred store memory?</strong>
-A: SQLite at <code>~/Alfred/data/alfred.db</code> on the Mac Studio, plus optional permanent facts seeded at boot. Memory is shared across SMS, voice, web chat, iMessage. He archives long conversations to iCloud (<code>Paul&#39;s Brain/04 Archive/alfred-conversations</code>).</p>
-<p><strong>Q: Can Alfred see iMessage?</strong>
-A: Not yet — the chat.db read needs Full Disk Access for <code>/usr/bin/python3</code>. To enable: System Settings → Privacy &amp; Security → Full Disk Access → add Python 3.9 binary. Until then, iMessage is the one channel Alfred can&#39;t read or send through.</p>
-<p><strong>Q: How do I add a new tool?</strong>
-A: Three options ranked by friction:</p>
-<ol>
-<li><strong>Easiest</strong>: ask Alfred. &quot;Spawn an agent in the Alfred repo to add a tool that does X.&quot; He writes the function in <code>alfred/tools/</code>, registers it in <code>brain.py</code>, opens a PR.</li>
-<li><strong>Manual</strong>: write the function, add a descriptor to the <code>TOOLS</code> list in <code>~/Alfred/alfred/brain.py</code>, add a dispatch arm in <code>run_tool()</code>, restart <code>com.alfred.server</code>.</li>
-<li><strong>MCP</strong>: if there&#39;s already an MCP server for it, expose it through Cursor&#39;s MCP layer rather than duplicating in Alfred.</li>
-</ol>
-<p><strong>Q: What&#39;s the difference between Alfred and the Cursor Cloud Agents on the dashboard?</strong>
-A: Alfred <em>spawns</em> Cursor agents. Alfred is a 24/7 chief of staff (one brain, many channels, instant). Cursor agents are short-lived workers that do one job in one repo and disappear after the PR. Think Alfred = manager, Cursor agents = freelancers he hires for the day.</p>
-<h2>Definition of done</h2>
-<ul>
-<li><input disabled="" type="checkbox"> You know the URL of all four touchpoints (SMS number, web chat, agent dashboard, SOP playbook)</li>
-<li><input disabled="" type="checkbox"> You can name 5 tools Alfred has and what triggers each</li>
-<li><input disabled="" type="checkbox"> You&#39;ve checked <code>data_freshness</code> on <code>/health</code> at least once</li>
-<li><input disabled="" type="checkbox"> You&#39;ve created at least one SOP via the Friday review loop</li>
-<li><input disabled="" type="checkbox"> You&#39;ve spawned at least one Cursor agent and watched it on the dashboard</li>
-<li><input disabled="" type="checkbox"> You&#39;ve reviewed this SOP and updated anything that surprised you</li>
-</ul>
-<h2>Related artefacts</h2>
-<ul>
-<li><strong>Alfred status page</strong> — <a href="https://paultyrrell.dev/alfred-monitor.html">paultyrrell.dev/alfred-monitor.html</a></li>
-<li><strong>Alfred capabilities API</strong> — <code>https://alfred.paultyrrell.dev/capabilities</code> (bearer auth)</li>
-<li><strong>Alfred health API</strong> — <code>https://alfred.paultyrrell.dev/health</code> (no auth, freshness signals)</li>
-<li><strong>Brain source</strong> — <code>~/Alfred/alfred/brain.py</code> on Mac Studio (TOOLS list + dispatch)</li>
-<li><strong>Tools dir</strong> — <code>~/Alfred/alfred/tools/</code> on Mac Studio</li>
-<li><strong>Cron list</strong> — <code>launchctl list | grep alfred</code> on Mac Studio</li>
-<li><strong>SOPs site</strong> — <a href="https://ptyrrell.github.io/open-claw-sops/">ptyrrell.github.io/open-claw-sops</a></li>
-<li><strong>Agent dashboard</strong> — <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/">fi-agent-dashboard</a></li>
-</ul>
+<p><strong>Q: My iMessages aren&#39;t being received — why?</strong></p>
+<blockquote>
+<p>The launchd Python doesn&#39;t have FDA. Ask Alfred &quot;how do I enable iMessage
+receive&quot; and follow the 7-step guide. (Send works fine without it.)</p>
+</blockquote>
+<p><strong>Q: I asked Alfred something he should know but he said he doesn&#39;t know.</strong></p>
+<blockquote>
+<p>Either the data source is stale (check freshness) or he doesn&#39;t have a
+tool for it yet. The four most common gaps are: (a) anything inside a
+private GitHub repo other than product-roadmap, (b) anything in Slack,
+(c) anything in iMessage groups (only DMs are polled), (d) anything that
+requires a paid LLM tool not yet wired (e.g. Claude Code).</p>
+</blockquote>
+<p><strong>Q: Voice was slower than usual.</strong></p>
+<blockquote>
+<p>Check <code>/health</code> data_freshness — if a cron is <code>lagging</code>, Alfred may be
+falling back to live API calls which are slow. Kick the cron with the
+command in the freshness summary.</p>
+</blockquote>
+<p><strong>Q: How many tools does Alfred have?</strong></p>
+<blockquote>
+<p>Run <code>curl -s http://127.0.0.1:8080/health | jq &#39;.tools | length&#39;</code> from the
+Mac Studio. As of this SOP: <strong>92</strong>.</p>
+</blockquote>
+<hr>
+<p><em>Last updated: 2026-05-13 — added Phase 2 cross-app readers, unified data
+freshness panel (zoom + fathom + grain + hubspot + aircall_sdr), iMessage
+smart routing, and the FDA setup helper.</em></p>
 
   </div>
   <div class="sop-footer">
@@ -375,7 +340,7 @@ A: Alfred <em>spawns</em> Cursor agents. Alfred is a 24/7 chief of staff (one br
 
 </main>
 <footer class="site-footer">
-  Open Claw SOPs · v0.2.0 · Built 2026-05-12 04:13 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+  Open Claw SOPs · v0.2.0 · Built 2026-05-13 09:21 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
 </footer>
 </body>
 </html>
