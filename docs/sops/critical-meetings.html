@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="0.2.0" />
+<title>Critical Meetings — never miss the ones that matter · Open Claw SOPs</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Open Claw <b>SOPs</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags"><span class="sop-card-tag">alfred</span><span class="sop-card-tag">open-claw</span><span class="sop-card-tag">calendar</span><span class="sop-card-tag">reminders</span><span class="sop-card-tag">voice</span><span class="sop-card-tag">escalation</span></div>
+  </div>
+  <h1 class="sop-title">Critical Meetings — never miss the ones that matter</h1>
+  <div class="sop-summary">How Alfred guarantees Paul shows up to high-stakes meetings — escalating from a day-before voice call, through SMS reminders, to a wake-up call, with a &quot;you missed it&quot; alert if all else fails. Includes how to add or remove a critical meeting via SMS, voice, or web chat.
+</div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>Paul Tyrrell</dd>
+    <dt>Status</dt><dd><span class="status status-live">live</span></dd>
+    <dt>Source</dt><dd><em>—</em></dd>
+    <dt>Created</dt><dd>2026-05-13</dd>
+    <dt>Updated</dt><dd>2026-05-13</dd>
+    <dt>audience</dt><dd>Paul (and any future operator of the Open Claw stack)</dd>
+  </dl>
+  <div class="sop-body">
+    <h1>Critical Meetings — never miss the ones that matter</h1>
+<p>Some meetings are too important to leave to a calendar notification. Alfred
+treats those as <strong>critical meetings</strong> and runs an escalating multi-channel
+confirmation flow against the actual Google Calendar events.</p>
+<p>This SOP came out of missing <strong>Founder Coaching with Julien Marzouk twice</strong>
+(both at 6 am Brisbane). Never again.</p>
+<hr>
+<h2>1. The escalation timeline</h2>
+<p>Each critical occurrence runs through this schedule. Times are <strong>before</strong> the
+event start (negative offsets), unless marked otherwise.</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Channel</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>T−18h</strong></td>
+<td><strong>Voice call</strong></td>
+<td>Alfred phones Paul: <em>&quot;You have X tomorrow at Y. Say YES to confirm, NO to skip, RESCHEDULE to draft a move.&quot;</em></td>
+</tr>
+<tr>
+<td><strong>T−12h</strong></td>
+<td>Voice call</td>
+<td>Re-tries if T−18h was unanswered/unconfirmed</td>
+</tr>
+<tr>
+<td><strong>T−6h</strong></td>
+<td>SMS + iMessage</td>
+<td>Text reminder if still unconfirmed</td>
+</tr>
+<tr>
+<td><strong>T−60m</strong></td>
+<td>SMS + iMessage</td>
+<td>Morning nudge</td>
+</tr>
+<tr>
+<td><strong>T−30m</strong></td>
+<td>SMS + iMessage</td>
+<td>Morning nudge</td>
+</tr>
+<tr>
+<td><strong>T−15m</strong></td>
+<td><strong>Wake-up voice call</strong></td>
+<td>Only if still unconfirmed — physical phone ring</td>
+</tr>
+<tr>
+<td><strong>T−10m</strong></td>
+<td>SMS + iMessage</td>
+<td>Final nudge</td>
+</tr>
+<tr>
+<td><strong>T+15m</strong></td>
+<td>SMS + iMessage</td>
+<td><em>&quot;⚠ MISSED: X started 15 min ago&quot;</em> — only if no acknowledgement</td>
+</tr>
+</tbody></table>
+<p>Once Paul confirms (any channel), all subsequent <code>*_if_unconfirmed</code> actions
+are suppressed. Plain <code>sms</code> reminders still fire — they&#39;re informational, not
+escalation.</p>
+<hr>
+<h2>2. How Paul confirms</h2>
+<p>Any of these mark the meeting confirmed:</p>
+<ul>
+<li><strong>On the call</strong> — say <em>&quot;yes&quot;</em>, <em>&quot;yep&quot;</em>, <em>&quot;confirmed&quot;</em>, <em>&quot;got it&quot;</em>, or press <strong>1</strong></li>
+<li><strong>By SMS / iMessage</strong> — reply with <em>&quot;yes&quot;</em>, <em>&quot;y&quot;</em>, <em>&quot;confirmed&quot;</em>, <em>&quot;ok&quot;</em>, or 👍 (within 60 min of any nudge)</li>
+<li><strong>In Alfred web chat</strong> — <em>&quot;confirm Founder Coaching&quot;</em></li>
+<li><strong>By voice command</strong> — <em>&quot;Alfred, confirm Founder Coaching&quot;</em></li>
+</ul>
+<p>Any of these tell Alfred you can&#39;t make it (voice only):</p>
+<ul>
+<li>Say <em>&quot;no&quot;</em>, <em>&quot;skip&quot;</em>, or press <strong>2</strong> → Alfred logs the skip</li>
+<li>Say <em>&quot;reschedule&quot;</em> or press <strong>3</strong> → Alfred queues a reschedule SMS draft</li>
+</ul>
+<hr>
+<h2>3. Adding a critical meeting</h2>
+<p>You don&#39;t manually list each occurrence — Alfred matches a <strong>substring of the
+calendar event title</strong>. So <em>&quot;Founder Coaching&quot;</em> matches both <em>&quot;Founder
+Coaching - Paul Tyrrell &amp; Julien Marzouk&quot;</em> and any future renamed instance.</p>
+<h3>Via SMS, voice, or chat</h3>
+<blockquote>
+<p><em>&quot;Alfred, mark Founder Coaching as critical.&quot;</em>
+<em>&quot;Alfred, never let me miss the Wednesday board meeting.&quot;</em>
+<em>&quot;Alfred, flag X as critical.&quot;</em></p>
+</blockquote>
+<p>Alfred will run the <code>add_critical_meeting</code> tool and reply with confirmation.</p>
+<h3>Direct (CLI / debugging)</h3>
+<pre><code class="language-bash">ssh mac-studio-2 &#39;cd ~/Alfred &amp;&amp; set -a &amp;&amp; source .env &amp;&amp; set +a &amp;&amp; \
+  ./venv/bin/python -c &quot;from alfred import critical_meetings as cm; \
+  print(cm.add_rule(title_pattern=\&quot;Board Meeting\&quot;, paul_phone=\&quot;+61401026347\&quot;))&quot;&#39;
+</code></pre>
+<hr>
+<h2>4. Listing / removing / confirming</h2>
+<table>
+<thead>
+<tr>
+<th>Intent</th>
+<th>Say to Alfred</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>See current critical meetings + status</td>
+<td><em>&quot;List critical meetings&quot;</em> / <em>&quot;What&#39;s on my never-miss list?&quot;</em></td>
+</tr>
+<tr>
+<td>Manually confirm next occurrence</td>
+<td><em>&quot;Confirm Founder Coaching&quot;</em></td>
+</tr>
+<tr>
+<td>Stop nagging me about something</td>
+<td><em>&quot;Remove X from critical&quot;</em> / <em>&quot;Stop nagging me about X&quot;</em></td>
+</tr>
+<tr>
+<td>Test the system end-to-end</td>
+<td><em>&quot;Test the critical meeting call&quot;</em> — Alfred phones you immediately</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>5. What&#39;s under the hood</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rules</td>
+<td><code>~/Alfred/data/critical_meetings.json</code></td>
+<td>List of title-pattern rules</td>
+</tr>
+<tr>
+<td>State</td>
+<td><code>~/Alfred/data/critical_meetings_state.json</code></td>
+<td>Per-occurrence: confirmed_at, actions_fired</td>
+</tr>
+<tr>
+<td>Logic</td>
+<td><code>~/Alfred/alfred/critical_meetings.py</code></td>
+<td><code>tick()</code> runs from cron</td>
+</tr>
+<tr>
+<td>Outbound call</td>
+<td><code>~/Alfred/alfred/tools/outbound_call.py</code></td>
+<td>Twilio call origination</td>
+</tr>
+<tr>
+<td>TwiML routes</td>
+<td><code>~/Alfred/alfred/_critical_routes.py</code></td>
+<td><code>/voice/critical/&lt;key&gt;</code> confirmation flow</td>
+</tr>
+<tr>
+<td>Cron entry</td>
+<td><code>~/Alfred/scripts/run_critical_meetings.py</code></td>
+<td><code>--dry</code> flag for testing</td>
+</tr>
+<tr>
+<td>Schedule</td>
+<td><code>~/Library/LaunchAgents/com.alfred.critical-meetings.plist</code></td>
+<td>Every 10 min 5–7 am, every 15–60 min through to 22:00</td>
+</tr>
+<tr>
+<td>Brain tools</td>
+<td><code>add_critical_meeting</code>, <code>list_critical_meetings</code>, <code>remove_critical_meeting</code>, <code>confirm_critical_meeting</code>, <code>trigger_critical_meeting_test_call</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>6. Cost</h2>
+<p>Each critical occurrence costs roughly:</p>
+<ul>
+<li>1 day-before call (<del>30 sec) — **</del>US$0.03**</li>
+<li>0–4 SMS reminders — <strong>~US$0.04 each</strong></li>
+<li>0–1 wake-up call (<del>20 sec) — **</del>US$0.02**</li>
+<li>0–1 missed alert SMS — <strong>~US$0.04</strong></li>
+</ul>
+<p>Worst case <del><strong>US$0.30 per critical meeting</strong>. For Founder Coaching
+(bi-weekly), that&#39;s **</del>US$0.60/month** to never miss it.</p>
+<hr>
+<h2>7. Currently-critical meetings (snapshot)</h2>
+<pre><code class="language-text">- Founder Coaching   (matches &quot;Founder Coaching - Paul Tyrrell &amp; Julien Marzouk&quot;)
+                     bi-weekly Tuesdays 6:00 am Brisbane
+                     paul_phone: +61 401 026 347
+                     created: 2026-05-13 (after second miss)
+</code></pre>
+<p>Add more by texting Alfred <em>&quot;mark X as critical&quot;</em>.</p>
+<hr>
+<h2>8. Anti-patterns</h2>
+<ul>
+<li>❌ <strong>Don&#39;t add too many</strong> — Alfred only treats them as critical because they
+warrant a phone call. If everything is critical, nothing is.</li>
+<li>❌ <strong>Don&#39;t disable the cron</strong> — silent failure mode. Use <code>remove_critical_meeting</code>
+per rule instead.</li>
+<li>❌ <strong>Don&#39;t mute the AU number</strong> — that&#39;s how the day-before call gets through.
+Save <strong>+61 468 072 882</strong> in contacts as <em>&quot;Alfred&quot;</em> so caller-ID is friendly.</li>
+<li>❌ <strong>Don&#39;t reply YES to a non-critical reminder thinking it confirms</strong> — the
+YES short-circuit only confirms the most-recently-nudged critical occurrence.</li>
+</ul>
+<hr>
+<h2>9. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Day-before call shows <code>status=busy</code> in logs</td>
+<td>Phone declined or DND. Save +61 468 072 882 as &quot;Alfred&quot; in contacts and allow during Focus modes.</td>
+</tr>
+<tr>
+<td><code>tick()</code> returns <code>scanned: 0</code></td>
+<td>No upcoming events match any rule&#39;s <code>title_pattern</code>. Run <code>list_critical_meetings</code> and check the actual calendar event title.</td>
+</tr>
+<tr>
+<td>YES reply doesn&#39;t confirm</td>
+<td>The reply must arrive within 60 min of a critical-meeting nudge action. After that, use <em>&quot;Confirm X&quot;</em> explicitly.</td>
+</tr>
+<tr>
+<td>Cron not firing</td>
+<td><code>launchctl list | grep critical-meetings</code> — should show the job. If not: <code>launchctl load ~/Library/LaunchAgents/com.alfred.critical-meetings.plist</code></td>
+</tr>
+<tr>
+<td>Want to test without waiting</td>
+<td>Say <em>&quot;Alfred, test the critical meeting call&quot;</em> — calls you immediately for the next critical occurrence.</td>
+</tr>
+</tbody></table>
+
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/critical-meetings.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP critical-meetings: ..."</em></div>
+  </div>
+</article>
+
+</main>
+<footer class="site-footer">
+  Open Claw SOPs · v0.2.0 · Built 2026-05-13 10:13 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>
