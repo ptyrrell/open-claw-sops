@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="0.2.0" />
+<title>FieldInsight + See Thru with Ceri · Open Claw SOPs</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Open Claw <b>SOPs</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags"><span class="sop-card-tag">from-fathom</span></div>
+  </div>
+  <h1 class="sop-title">FieldInsight + See Thru with Ceri</h1>
+  <div class="sop-summary">[00:00:00] Paul. Tyrrell: My computer&#39;s a bit cold this morning.</div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>Paul Tyrrell</dd>
+    <dt>Status</dt><dd><span class="status status-live">live</span></dd>
+    <dt>Source</dt><dd><span class="sop-card-tag">fathom</span> <a href="https://fathom.video/calls/668120540" target="_blank" rel="noopener">fathom · FieldInsight + See Thru with Ceri</a></dd>
+    <dt>Created</dt><dd>2026-05-13</dd>
+    <dt>Updated</dt><dd>2026-05-13</dd>
+    
+  </dl>
+  <div class="sop-body">
+    <h2>When to use this SOP</h2>
+<p>Use this when onboarding a new client to FieldInsight who also needs See Thru (or similar contractor workforce management) and wants to understand how AI-driven scheduling can reduce manual lookup time and improve job estimation accuracy.</p>
+<h2>Outcome</h2>
+<p>Client understands the AI scheduling capabilities in FieldInsight, has seen a live demo of task pattern recognition and worker quality tracking, and has granted you system access to set up the integration. They know what data FieldInsight can surface automatically (previous job duration, crew size, worker quality) and when to trust the AI prediction vs. manual override.</p>
+<h2>Prerequisites</h2>
+<ul>
+<li><strong>FieldInsight account</strong> with project management features enabled</li>
+<li><strong>See Thru account</strong> (or equivalent workforce mgmt system) — login credentials</li>
+<li><strong>Historical job data</strong> — at least 3–6 months of completed tasks with crew assignments and durations</li>
+<li><strong>Screen share tool</strong> (Zoom or equivalent) with permission granted</li>
+<li><strong>Approver present</strong> if client wants to see custom AI prompt workflows (optional: have Ceri or equivalent scheduling lead on the call)</li>
+</ul>
+<h2>Steps</h2>
+<ol>
+<li><p><strong>Frame the AI unlock</strong> — Open with the dyslexic/ADHD leverage point if relevant (&quot;AI is like a prosthetic arm for scheduling: you still do the thinking, it handles the lookup and grammar&quot;). Otherwise, lead with: &quot;FieldInsight&#39;s AI recognises patterns in your historical jobs and predicts crew size, duration, and worker quality for new tasks.&quot;</p>
+</li>
+<li><p><strong>Share the FieldInsight scheduling view</strong> — Navigate to <strong>FieldInsight → Projects → [Active Project] → Task Scheduling</strong>. Point out the &quot;AI Suggest&quot; button (or equivalent) in the task detail panel.</p>
+</li>
+<li><p><strong>Run a live prediction</strong> — Pick a task type the client has done before (e.g., &quot;Roof inspection, 2-storey&quot;). Click <strong>AI Suggest</strong>. Show how the system returns:</p>
+<ul>
+<li>Estimated duration (e.g., &quot;4.2 hrs based on last 8 similar tasks&quot;)</li>
+<li>Recommended crew size (e.g., &quot;2 workers&quot;)</li>
+<li>Worker quality flag (e.g., &quot;Use crew with avg rating ≥4.2 for this task type&quot;)</li>
+<li>Watch out for: If historical data is sparse (&lt;3 prior jobs), AI may flag &quot;Low confidence — manual review needed.&quot;</li>
+</ul>
+</li>
+<li><p><strong>Cross-check with See Thru</strong> — Open <strong>See Thru → Job History</strong> in a second tab. Filter by the same task type. Show the raw data FieldInsight pulled (dates, crew names, actual hours). Explain: &quot;The AI doesn&#39;t invent numbers; it averages these completed jobs and weights by worker performance.&quot;</p>
+</li>
+<li><p><strong>Demo the manual override path</strong> — Click <strong>Override AI</strong> in FieldInsight. Show how to adjust crew size or duration if client has contextual knowledge (e.g., &quot;This site has difficult access → add 1.5x time multiplier&quot;). Emphasise: &quot;You&#39;re still the scheduler; AI is the research assistant.&quot;</p>
+</li>
+<li><p><strong>Grant system access</strong> — If client approves, have them share <strong>See Thru API key</strong> (or SFTP creds if no API). Store in <strong>FieldInsight → Settings → Integrations → See Thru</strong>. Test the connection with a single task sync.</p>
+</li>
+<li><p><strong>Set expectations for iteration</strong> — Explain: &quot;AI improves 20–50% per month (per Paul&#39;s rule). If a prediction feels off in week 1, flag it; by month 3 the model will be dialled in to your crew&#39;s actual performance.&quot;</p>
+</li>
+</ol>
+<h2>Decision tree</h2>
+<table>
+<thead>
+<tr>
+<th>Client says</th>
+<th>You do</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&quot;I want to write my own schedules&quot;</td>
+<td>Acknowledge. Offer to enable AI suggestions in read-only mode for 2 weeks so they can compare.</td>
+</tr>
+<tr>
+<td>&quot;Our jobs are too variable for AI&quot;</td>
+<td>Show the &quot;Low confidence&quot; flag in action. Explain AI surfaces the variance itself — still saves lookup time.</td>
+</tr>
+<tr>
+<td>&quot;Can AI pick the actual workers?&quot;</td>
+<td>Yes, if See Thru has worker skill/rating metadata. Demo the quality filter (avg rating ≥X).</td>
+</tr>
+<tr>
+<td>&quot;What if we don&#39;t have 6 months of history?&quot;</td>
+<td>AI still works but flags low confidence. Recommend manual input for first 10 tasks, then retrain.</td>
+</tr>
+</tbody></table>
+<h2>Common objections / FAQ</h2>
+<p><strong>Q: Will AI replace our scheduler (Ceri)?</strong><br>A: No. AI replaces the 30 minutes of digging through old jobs to find &quot;how long did that roof take last time?&quot; The scheduler still decides strategy, handles exceptions, and approves final schedule.</p>
+<p><strong>Q: How does AI handle one-off custom jobs?</strong><br>A: If no similar task exists, AI returns &quot;No pattern found — manual estimate required.&quot; You input the data, which becomes training for next time.</p>
+<p><strong>Q: Can we trust the crew quality score?</strong><br>A: It&#39;s based on See Thru ratings (or time-to-complete if no ratings). Verify the underlying data in See Thru before relying on it. Treat as a starting point, not gospel.</p>
+<p><strong>Q: What if the AI predicts 2 workers but we know we need 3?</strong><br>A: Use the override. FieldInsight logs your correction; after 3–5 overrides on that task type, the AI retrains and will suggest 3 next time.</p>
+<h2>Definition of done</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Client has seen a live AI prediction for at least one task type</li>
+<li><input disabled="" type="checkbox"> See Thru integration connected and tested (1 task synced successfully)</li>
+<li><input disabled="" type="checkbox"> Client understands the &quot;AI Suggest&quot; vs. &quot;Override&quot; workflow</li>
+<li><input disabled="" type="checkbox"> Historical job data (≥3 months) imported into FieldInsight</li>
+<li><input disabled="" type="checkbox"> Client knows how to flag low-confidence predictions for manual review</li>
+<li><input disabled="" type="checkbox"> Follow-up booked in 2 weeks to review first batch of AI-assisted schedules</li>
+</ul>
+<h2>Related artefacts</h2>
+<ul>
+<li><strong>FieldInsight → Settings → Integrations → See Thru</strong> (API key setup)</li>
+<li><strong>See Thru → Job History export</strong> (CSV template if no API)</li>
+<li><strong>Paul&#39;s AI development roadmap</strong> (internal: ask for access if client wants feature previews)</li>
+<li><strong>Worker quality rating schema</strong> (define in See Thru before sync: 1–5 scale or time-based percentile)</li>
+</ul>
+<!-- TODO: confirm if FieldInsight has a public changelog for AI model updates (20–50%/month claim) -->
+
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/fieldinsight-see-thru-with-ceri.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP fieldinsight-see-thru-with-ceri: ..."</em></div>
+  </div>
+</article>
+
+</main>
+<footer class="site-footer">
+  Open Claw SOPs · v0.2.0 · Built 2026-05-13 09:35 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>
