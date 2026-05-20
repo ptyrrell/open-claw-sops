@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="0.2.0" />
+<title>V2-trial-provisioning-investigation · Open Claw SOPs</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Open Claw <b>SOPs</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags"></div>
+  </div>
+  <h1 class="sop-title">V2-trial-provisioning-investigation</h1>
+  <div class="sop-summary"></div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>Paul Tyrrell</dd>
+    <dt>Status</dt><dd><span class="status status-draft">draft</span></dd>
+    <dt>Source</dt><dd><em>—</em></dd>
+    <dt>Created</dt><dd></dd>
+    <dt>Updated</dt><dd></dd>
+    
+  </dl>
+  <div class="sop-body">
+    <h1>V2: Trial-Account Provisioning — Investigation Notes</h1>
+<blockquote>
+<p>Goal: when a deal in fi-map reaches stage = &quot;ready for trial&quot;,
+automatically create a FieldInsight trial account (org + admin user +
+password) and email the credentials to the prospect, then mark MAP
+&quot;trial active&quot; with a creds-issued timestamp.</p>
+</blockquote>
+<h2>What I found</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>URL / Location</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Production app</td>
+<td><a href="https://app.fieldinsight.com/">https://app.fieldinsight.com/</a> → AWS (13.237.197.231, ap-southeast-2)</td>
+<td>Django web app, login at <code>/accounts/login/</code>, admin at <code>/admin/</code></td>
+</tr>
+<tr>
+<td>Setup wizard</td>
+<td><a href="https://fieldinsight-setup-wizard-87b29f2975f7.herokuapp.com/">https://fieldinsight-setup-wizard-87b29f2975f7.herokuapp.com/</a></td>
+<td><strong>Just a menu viewer</strong>, NOT a trial-create API. Misleading name.</td>
+</tr>
+<tr>
+<td>Consolidated app</td>
+<td><code>fieldinsight-consolidated-app</code> (Heroku)</td>
+<td>Owned by Paul — likely the codebase / dev environment. Worth investigating.</td>
+</tr>
+<tr>
+<td>Public signup page</td>
+<td>None found (<code>/signup/</code>, <code>/trial/</code>, <code>/api/trial/</code> all 404)</td>
+<td>No self-serve trial in prod today</td>
+</tr>
+</tbody></table>
+<h2>What&#39;s missing for V2</h2>
+<ol>
+<li><strong>No HTTP API for trial creation today.</strong> The wizard is just a menu
+visualisation, not a provisioning endpoint.</li>
+<li><strong>Admin is human-only.</strong> Trials are created manually via Django admin
+right now (best guess based on no signup URL existing).</li>
+</ol>
+<h2>Three V2 paths</h2>
+<h3>Path A — Django management command + token endpoint (cleanest)</h3>
+<p>Add to the FieldInsight Django codebase:</p>
+<pre><code class="language-python"># api/views/trial_provisioning.py
+@require_POST
+@validate_token  # bearer matching FI_TRIAL_PROVISION_TOKEN
+def create_trial(request):
+    data = json.loads(request.body)
+    org = Organization.objects.create(name=data[&#39;company&#39;], plan=&#39;trial&#39;, trial_ends=now()+timedelta(days=14))
+    user = User.objects.create_user(email=data[&#39;email&#39;], password=gen_password())
+    org.add_member(user, role=&#39;admin&#39;)
+    send_welcome_email(user, password=raw_password)
+    return JsonResponse({&#39;org_id&#39;: org.id, &#39;login_url&#39;: &#39;...&#39;, &#39;username&#39;: user.email})
+</code></pre>
+<p>Then fi-map posts to <code>https://app.fieldinsight.com/api/internal/trial</code>
+when the MAP signals &quot;ready for trial&quot;.</p>
+<p><strong>Effort: 4-6h Django work.</strong> Needs the FI dev team or access to the
+prod Django repo.</p>
+<h3>Path B — Headless browser script</h3>
+<p>If Path A is blocked: spin up a Playwright/Puppeteer worker that logs
+into Django admin as a service account, fills in the org-create form,
+and reads back the new credentials. Brittle — breaks if Django UI changes.</p>
+<p><strong>Effort: 4h scripting + ongoing fragility.</strong></p>
+<h3>Path C — Manual confirmation, then automation in V3</h3>
+<p>Skip auto-provisioning for V2. Instead, fi-map sends Paul/Natasha a
+push notification (&quot;Acme is ready for trial — click to provision&quot;),
+they click, manually create the account in Django admin, then paste
+the credentials back into the MAP. Alfred sends the welcome email.</p>
+<p><strong>Effort: 1h. Buys time to design Path A properly.</strong></p>
+<h2>Recommended next step</h2>
+<p>I&#39;d go <strong>Path C now → Path A in 2-3 weeks</strong>, but it needs your call:</p>
+<ul>
+<li>Do you have access to the FieldInsight Django repo from this Mac Studio?</li>
+<li>Or should we contact the dev team to add the trial endpoint?</li>
+</ul>
+<p>Once Path A lands, V2 ships in an afternoon (fi-map already has the
+deal+meeting+action data model; only the &quot;ready for trial&quot; trigger and
+the POST-to-FI call need adding).</p>
+<h2>Files I touched while investigating</h2>
+<p>(read-only — no production code was modified)</p>
+<ul>
+<li>Listed <code>paul@fieldinsight.com</code> Heroku apps</li>
+<li>Probed unauthenticated GET on app.fieldinsight.com paths</li>
+<li>Inspected setup-wizard HTML</li>
+<li>No POSTs, no auth attempts, no writes</li>
+</ul>
+
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/V2-trial-provisioning-investigation.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP V2-trial-provisioning-investigation: ..."</em></div>
+  </div>
+</article>
+
+</main>
+<footer class="site-footer">
+  Open Claw SOPs · v0.2.0 · Built 2026-05-20 02:54 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>
