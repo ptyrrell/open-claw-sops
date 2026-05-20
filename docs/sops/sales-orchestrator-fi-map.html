@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="0.2.0" />
+<title>sales-orchestrator-fi-map · Open Claw SOPs</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Open Claw <b>SOPs</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags"></div>
+  </div>
+  <h1 class="sop-title">sales-orchestrator-fi-map</h1>
+  <div class="sop-summary"></div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>Paul Tyrrell</dd>
+    <dt>Status</dt><dd><span class="status status-draft">draft</span></dd>
+    <dt>Source</dt><dd><em>—</em></dd>
+    <dt>Created</dt><dd></dd>
+    <dt>Updated</dt><dd></dd>
+    
+  </dl>
+  <div class="sop-body">
+    <h1>Sales Orchestrator (fi-map) — Mutual Action Plans</h1>
+<p><strong>Owner:</strong> Paul Tyrrell · <strong>System:</strong> <code>fi-map</code> (Heroku) + <code>alfred.tools.sales_meeting_scanner</code> (Mac Studio cron)
+<strong>Live URL:</strong> <a href="https://fi-map-0c6b43a5f706.herokuapp.com/">https://fi-map-0c6b43a5f706.herokuapp.com/</a>
+<strong>Source:</strong> <a href="https://github.com/ptyrrell/fi-map">https://github.com/ptyrrell/fi-map</a></p>
+<h2>What it does (in one breath)</h2>
+<p>Every sales meeting on Paul&#39;s or Natasha&#39;s Google Calendar gets auto-detected,
+its transcript gets pulled from Fathom (or Grain or Zoom), Claude extracts a
+5-bullet summary, decisions, next step, and action items (with owner + due
+date + which side owns it), and the result lands in a <strong>Mutual Action Plan</strong>
+page per deal at <code>https://fi-map-*.herokuapp.com/</code>.</p>
+<p>One deal → one MAP. The MAP shows every meeting + every open action across
+the full sales motion (Discovery → Guided Trial → Trial Review → Decision).</p>
+<h2>Why this exists</h2>
+<ul>
+<li>Stop asking &quot;where are we up to with Acme?&quot; — the MAP is the single
+source of truth, updated automatically from meeting recordings.</li>
+<li>Stop letting actions slip — extracted action items have owner + side
+(US / THEM) + due date, visible on one page per deal.</li>
+<li>Free Paul and Natasha from rewriting meeting notes — Claude does it.</li>
+</ul>
+<h2>Architecture</h2>
+<pre><code>Google Calendar event (Paul&#39;s or Natasha&#39;s)
+   ↓  (twice daily: 09:15 + 18:00 AEST, via launchd)
+~/Alfred/scripts/run_sales_meeting_scanner.py
+   ↓
+alfred.tools.sales_meeting_scanner.scan()
+   ├─ classify_event()           ← title patterns + external attendee check
+   ├─ find_transcript()          ← Fathom → Grain → Zoom (date proximity)
+   ├─ extract_with_claude()      ← Claude Haiku 4.5, JSON output
+   └─ POST /api/meetings/ingest  ← fi-map (idempotent by calendar_event_id)
+        ↓
+fi-map (Heroku · Node 20 · Postgres essential-0)
+   ├─ deals          (one row per prospect/account)
+   ├─ meetings       (one row per ingested meeting)
+   └─ action_items   (one row per extracted action)
+        ↓
+Dashboard at /  (auto-refresh every 60s)
+</code></pre>
+<h2>What gets classified as a &quot;sales meeting&quot;</h2>
+<p>Title matches <strong>any</strong> of these case-insensitive substrings PLUS at least one
+external attendee (not <code>@fieldinsight.com</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>discovery</code></td>
+<td>discovery</td>
+</tr>
+<tr>
+<td><code>trial review</code></td>
+<td>trial-review</td>
+</tr>
+<tr>
+<td><code>guided trial</code> · <code>deep dive</code></td>
+<td>guided-trial</td>
+</tr>
+<tr>
+<td><code>demo</code></td>
+<td>demo</td>
+</tr>
+<tr>
+<td><code>intro call</code> · <code>qualification</code></td>
+<td>sdr</td>
+</tr>
+</tbody></table>
+<p>Meetings with external attendees that DON&#39;T match a pattern are tagged
+<code>uncategorised</code> and still ingested (Claude can usually still extract value).</p>
+<p>Meetings are <strong>hard-excluded</strong> if the title contains: <code>1:1</code>, <code>standup</code>,
+<code>stand up</code>, <code>team meeting</code>, <code>all hands</code>, <code>sales stand up</code>, <code>lunch</code>,
+<code>walk</code>, <code>office</code>, <code>personal</code>, <code>haircut</code>, <code>doctor</code>, <code>dentist</code>,
+<code>internal review</code>, <code>weekly check-in</code>, <code>birthday</code>, <code>anniversary</code>, <code>ooo</code>.</p>
+<p>To add a new type: edit <code>SALES_MEETING_PATTERNS</code> in
+<code>~/Alfred/alfred/tools/sales_meeting_scanner.py</code>.</p>
+<h2>Cron schedule</h2>
+<p><code>launchctl list | grep sales-meeting</code> →
+<code>com.alfred.sales-meeting-scanner</code></p>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>Days back scanned</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>09:15 AEST</td>
+<td>3</td>
+<td>Catch yesterday&#39;s meetings (Fathom usually has the transcript by morning)</td>
+</tr>
+<tr>
+<td>18:00 AEST</td>
+<td>3</td>
+<td>Catch today&#39;s morning + afternoon meetings</td>
+</tr>
+</tbody></table>
+<p>State (which calendar event IDs have already been processed) is stored in
+<code>~/Alfred/data/sales_meeting_scanner_state.json</code> — never re-posts the same
+meeting. Idempotent at the fi-map API level too (UNIQUE on <code>calendar_event_id</code>).</p>
+<h2>How to use the dashboard</h2>
+<p>Open <a href="https://fi-map-0c6b43a5f706.herokuapp.com/">https://fi-map-0c6b43a5f706.herokuapp.com/</a> → see all active deals with
+stage, last meeting date, open action count.</p>
+<p>Click any row → drill into:</p>
+<ul>
+<li>Every meeting on that deal (summary, decisions, next step, transcript link)</li>
+<li>Every action item with owner, due date, side (US / THEM), status</li>
+</ul>
+<h2>How Paul can interact (via Alfred)</h2>
+<p>Tools that Alfred can call (planned for next iteration — not yet wired into
+<code>brain.py</code>):</p>
+<ul>
+<li><code>list_open_maps</code> → &quot;Which deals have open actions?&quot;</li>
+<li><code>map_detail(company)</code> → full MAP for one deal</li>
+<li><code>mark_action_done(action_id)</code> → close out an action</li>
+<li><code>re_scan_meetings(days=7)</code> → force a re-scan (e.g. after fixing a transcript)</li>
+</ul>
+<p>Until those land, the dashboard is read-only and the scanner runs on schedule.</p>
+<h2>Manual operations</h2>
+<pre><code class="language-bash">ssh paultyrrellsilver2022@mac-studio-2
+
+# Dry-run: see what WOULD be ingested without writing
+cd ~/Alfred &amp;&amp; source venv/bin/activate &amp;&amp; set -a &amp;&amp; source .env &amp;&amp; set +a
+python scripts/run_sales_meeting_scanner.py --dry --days 7
+
+# Live ingest of a wider window (e.g. backfill last 30 days)
+python scripts/run_sales_meeting_scanner.py --days 30
+
+# Force re-process a single event (delete from state, then re-scan)
+python -c &quot;import json,pathlib; p=pathlib.Path.home()/&#39;Alfred/data/sales_meeting_scanner_state.json&#39;; s=json.loads(p.read_text()); s[&#39;processed&#39;].pop(&#39;EVENT_ID_HERE&#39;,None); p.write_text(json.dumps(s,indent=2))&quot;
+
+# Check cron logs
+tail -50 ~/Library/Logs/alfred-sales-meeting-scanner.log
+</code></pre>
+<h2>API (for future integrations)</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td><code>/api/health</code></td>
+<td>none</td>
+<td>Liveness</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/maps</code></td>
+<td>none (or basic-auth)</td>
+<td>List all deals</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/maps/:id</code></td>
+<td>none (or basic-auth)</td>
+<td>One deal detail</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/deals</code></td>
+<td><code>Bearer FI_MAP_INGEST_TOKEN</code></td>
+<td>Upsert deal</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/meetings/ingest</code></td>
+<td>bearer</td>
+<td>Webhook (scanner calls this)</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td><code>/api/actions/:id</code></td>
+<td>bearer</td>
+<td>Mark action done / change due date</td>
+</tr>
+</tbody></table>
+<p><code>FI_MAP_INGEST_TOKEN</code> is in:</p>
+<ul>
+<li><code>~/Alfred/.env</code> on the Mac Studio (used by the scanner)</li>
+<li><code>heroku config:get FI_MAP_INGEST_TOKEN -a fi-map</code></li>
+</ul>
+<h2>Cost (per month)</h2>
+<ul>
+<li>Heroku Basic dyno: <strong>$7</strong></li>
+<li>Heroku Postgres essential-0: <strong>$5</strong></li>
+<li>Claude Haiku 4.5 per scan run: <strong>~$0.02</strong> (40 meetings × ~$0.0005)</li>
+<li><strong>Total: ~$13/month + ~$2/month LLM</strong> ≈ <strong>$15/month</strong></li>
+</ul>
+<h2>Roadmap (V1 → V3)</h2>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Adds</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MVP (live)</td>
+<td>Auto-scan, MAP per deal, internal dashboard</td>
+</tr>
+<tr>
+<td><strong>V1</strong></td>
+<td>Prospect-facing MAP share link · auto-book follow-up meeting in Natasha/Paul calendar based on stage</td>
+</tr>
+<tr>
+<td><strong>V2</strong></td>
+<td>Trial account provisioning (call FieldInsight admin API, create username/password, email credentials, mark MAP as &quot;trial active&quot;)</td>
+</tr>
+<tr>
+<td><strong>V3</strong></td>
+<td>Guided Trial checklist page on FieldInsight (login → first job → invite tech → first invoice); MAP shows completion %</td>
+</tr>
+</tbody></table>
+<h2>Anti-patterns &amp; troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scanner returns 0 matched</td>
+<td>All meetings already processed</td>
+<td>Run with <code>--days 30</code> for wider window, or clear state</td>
+</tr>
+<tr>
+<td>Action items have <code>null</code> owners</td>
+<td>Claude couldn&#39;t tell who owns it from the transcript</td>
+<td>Add a &quot;who owns what&quot; section to your meeting outline</td>
+</tr>
+<tr>
+<td>Wrong company name on MAP</td>
+<td>Title parser fell back to email domain</td>
+<td>Edit the deal in fi-map (manual UPDATE for now; CRUD UI in V1)</td>
+</tr>
+<tr>
+<td>Two deals for same prospect</td>
+<td>First event used a different email/title</td>
+<td>Use <code>POST /api/deals</code> to merge, then DELETE the duplicate</td>
+</tr>
+<tr>
+<td>Fathom 401 / 403</td>
+<td>Token rotated</td>
+<td>Update <code>FATHOM_API_KEY</code> in <code>~/Alfred/.env</code>, restart Alfred</td>
+</tr>
+<tr>
+<td>Zoom: &quot;couldn&#39;t list recordings&quot;</td>
+<td>Token expired (OAuth account creds)</td>
+<td><code>zoom.py</code> self-refreshes — check <code>ZOOM_CLIENT_ID/SECRET/ACCOUNT_ID</code></td>
+</tr>
+</tbody></table>
+<h2>Why &quot;fi-map&quot; as a separate app (not just Alfred tools)</h2>
+<ol>
+<li><strong>Persistence model differs</strong> — Alfred is request/response; fi-map is a
+stateful UI that prospects and the team need to view anytime.</li>
+<li><strong>Separation of concerns</strong> — Alfred owns AI work (transcript fetch +
+LLM extraction). fi-map owns data + UI. Either side can be rebuilt
+without touching the other.</li>
+<li><strong>Future prospect-sharing</strong> — V1 makes the MAP shareable; needs a real
+web app, not a chat tool.</li>
+<li><strong>Multi-user write</strong> — Natasha or any sales hire can mark actions done
+from the UI without going through Alfred.</li>
+</ol>
+
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/sales-orchestrator-fi-map.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP sales-orchestrator-fi-map: ..."</em></div>
+  </div>
+</article>
+
+</main>
+<footer class="site-footer">
+  Open Claw SOPs · v0.2.0 · Built 2026-05-20 02:51 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>
