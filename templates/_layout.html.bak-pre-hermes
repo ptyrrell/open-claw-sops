@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="version" content="{{VERSION}}" />
-<title>{{TITLE}} · Hermes Playbook</title>
+<title>{{TITLE}} · Open Claw SOPs</title>
 <link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
 <link rel="stylesheet" href="/open-claw-sops/styles.css" />
 </head>
@@ -13,7 +13,7 @@
   <a href="/open-claw-sops/" class="brand">
     <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
     <div class="brand-text">
-      <div class="brand-title">Hermes <b>Playbook</b></div>
+      <div class="brand-title">Open Claw <b>SOPs</b></div>
       <div class="brand-sub">Playbooks built by Alfred from real calls</div>
     </div>
   </a>
@@ -27,7 +27,7 @@
 {{CONTENT}}
 </main>
 <footer class="site-footer">
-  Hermes Playbook · v{{VERSION}} · Built {{BUILT_AT}} · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+  Open Claw SOPs · v{{VERSION}} · Built {{BUILT_AT}} · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
 </footer>
 </body>
 </html>
