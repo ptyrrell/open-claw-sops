@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="0.2.0" />
+<title>Hermes Rebrand — what changed, where, how to revert · Hermes Playbook</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Hermes <b>Playbook</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags"><span class="sop-card-tag">hermes</span><span class="sop-card-tag">brand</span><span class="sop-card-tag">migration</span><span class="sop-card-tag">alfred</span><span class="sop-card-tag">playbook</span></div>
+  </div>
+  <h1 class="sop-title">Hermes Rebrand — what changed, where, how to revert</h1>
+  <div class="sop-summary">On 2026-05-23 the platform brand &quot;Open Claw&quot; was retired in favour of &quot;Hermes&quot; — the messenger of the gods, a stronger semantic fit for a comms-first personal AI ecosystem. Alfred stays as the agent persona. This SOP enumerates every file touched, what changed, what was deliberately NOT changed, and how to revert.</div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>Paul Tyrrell</dd>
+    <dt>Status</dt><dd><span class="status status-live">live</span></dd>
+    <dt>Source</dt><dd><em>—</em></dd>
+    <dt>Created</dt><dd></dd>
+    <dt>Updated</dt><dd></dd>
+    
+  </dl>
+  <div class="sop-body">
+    <h1>Hermes Rebrand</h1>
+<blockquote>
+<p><strong>Brand hierarchy after migration:</strong></p>
+<ul>
+<li><strong>Hermes</strong> = the personal AI platform / ecosystem (umbrella)</li>
+<li><strong>Alfred</strong> = the conversational agent inside Hermes (Claude on Mac Studio)</li>
+<li><strong>Tagline:</strong> Alfred — your Hermes assistant</li>
+</ul>
+<p><strong>Before:</strong> Alfred — your Open Claw assistant
+<strong>After:</strong> Alfred — your Hermes assistant</p>
+</blockquote>
+<h2>Why Hermes</h2>
+<p>Hermes is the Greek messenger of the gods — patron of travelers, commerce,
+and communication. A platform whose primary job is moving messages between
+Paul and his systems (SMS, voice, iMessage, web chat, MAPs, SOPs) lands
+more naturally under &quot;Hermes&quot; than &quot;Open Claw&quot; ever did. The agent
+(Alfred) stays — he&#39;s a character; Hermes is the world he lives in.</p>
+<h2>Files changed (2026-05-23)</h2>
+<h3>Alfred (Mac Studio · <code>~/Alfred/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What changed</th>
+<th>Backup</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>alfred/config.py</code></td>
+<td><code>ALFRED_SYSTEM_PROMPT</code>: &quot;Open Claw assistant&quot; → &quot;Hermes assistant&quot; (identity line + canonical phrase)</td>
+<td><code>.bak-pre-hermes-rebrand</code></td>
+</tr>
+<tr>
+<td><code>run.py</code></td>
+<td>Status JSON <code>platform</code> + <code>tagline</code>; tool category key <code>open_claw</code> → <code>hermes</code></td>
+<td><code>.bak-pre-hermes-rebrand</code></td>
+</tr>
+<tr>
+<td><code>alfred/server.py</code></td>
+<td>Two status JSON blobs · voice greeting &quot;Alfred here, Paul — your Hermes assistant&quot; · Fiona SMS auto-reply signature <code>(Alfred / Hermes)</code></td>
+<td><code>.bak-pre-hermes-rebrand</code></td>
+</tr>
+<tr>
+<td><code>alfred/brain.py</code></td>
+<td>Tool descriptors for <code>list_open_claw_agents</code> etc. — <em>description text only</em>, function names unchanged</td>
+<td><code>.bak-pre-hermes-rebrand</code></td>
+</tr>
+<tr>
+<td><code>alfred/tools/sops.py</code></td>
+<td>Display string <code>&quot;Open Claw SOPs&quot;</code> → <code>&quot;Hermes Playbook&quot;</code></td>
+<td><code>.bak-pre-hermes-rebrand</code></td>
+</tr>
+<tr>
+<td><code>alfred/tools/open_claw.py</code></td>
+<td>Internal <code>format_agents()</code> header text only — module file kept as-is</td>
+<td><code>.bak-pre-hermes-rebrand</code></td>
+</tr>
+</tbody></table>
+<h3>Deployed Heroku apps</h3>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Version</th>
+<th>What changed</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>fi-alfred-chat</strong></td>
+<td>v0.3.3 → <strong>v0.4.0</strong></td>
+<td><code>&lt;title&gt;</code>, login card h2, header brand block, title attr — all &quot;Open Claw&quot; → &quot;Hermes&quot;</td>
+</tr>
+<tr>
+<td><strong>fi-agent-dashboard</strong></td>
+<td>v0.11.0 → <strong>v0.12.0</strong></td>
+<td><code>&lt;title&gt;</code>, header logo alt + title, &quot;Open Claw Model&quot; tab → &quot;Hermes Model&quot;, architecture page intro + 3 arch notes, mermaid subgraph label <code>[Open Claw - the ecosystem]</code> → <code>[Hermes - the ecosystem]</code>, App Hub header, footer, server.js cursor-agent spawn prompt, package.json description</td>
+</tr>
+<tr>
+<td><strong>fi-map</strong></td>
+<td>v0.1.0 (unchanged)</td>
+<td>No references — already brand-neutral</td>
+</tr>
+</tbody></table>
+<h3>Repositories</h3>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Branch</th>
+<th>Commit</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ptyrrell/fi-alfred-chat</code></td>
+<td>main</td>
+<td>&quot;v0.4.0 — Hermes rebrand (was Open Claw)&quot;</td>
+</tr>
+<tr>
+<td><code>ptyrrell/fi-agent-dashboard</code></td>
+<td>main</td>
+<td>&quot;v0.12.0 — Hermes rebrand (was Open Claw)&quot;</td>
+</tr>
+<tr>
+<td><code>ptyrrell/open-claw-sops</code></td>
+<td>main</td>
+<td>&quot;Hermes rebrand — site header is now &#39;Hermes Playbook&#39;&quot;</td>
+</tr>
+<tr>
+<td><code>ptyrrell/product-roadmap</code></td>
+<td>main</td>
+<td>&quot;Hermes rebrand — public roadmap brand strings&quot;</td>
+</tr>
+</tbody></table>
+<p>Templates rebuilt and committed at <code>ptyrrell/open-claw-sops/templates/{index,_layout}.html</code>:</p>
+<ul>
+<li><code>&lt;title&gt;… · Open Claw SOPs</code> → <code>… · Hermes Playbook</code></li>
+<li><code>&lt;h1&gt;Open Claw SOPs</code> → <code>&lt;h1&gt;Hermes Playbook</code></li>
+<li>Footer brand line and meta title</li>
+</ul>
+<h2>Files NOT changed (deliberate)</h2>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Why kept</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GitHub repo name <code>open-claw-sops</code></td>
+<td>Renaming breaks every existing SOP URL (<code>/open-claw-sops/sops/critical-meetings.html</code> etc.), every saved bookmark, the Heroku integration, and every internal link in Alfred&#39;s <code>sops_tool</code></td>
+</tr>
+<tr>
+<td>GitHub Pages URL <code>ptyrrell.github.io/open-claw-sops/</code></td>
+<td>Same reason. The visible page header now says &quot;Hermes Playbook&quot;; the URL stem is just historical</td>
+</tr>
+<tr>
+<td>Heroku app names (<code>fi-alfred-chat-cbf0c5043d1a</code>, <code>fi-agent-dashboard-2cc7e07d11d5</code>, <code>fi-map-0c6b43a5f706</code>)</td>
+<td>URLs already shared, in DNS, in Twilio webhooks, in Cursor skill config</td>
+</tr>
+<tr>
+<td>Cloudflare domain <code>alfred.paultyrrell.dev</code></td>
+<td>Twilio voice/SMS webhooks, fi-alfred-chat backend, Cursor IDE skill all point here</td>
+</tr>
+<tr>
+<td>Agent persona &quot;Alfred&quot;</td>
+<td>Paul asked only to swap the umbrella brand. Alfred is the character</td>
+</tr>
+<tr>
+<td>Mac directory <code>~/Alfred/</code> + Python package <code>alfred/</code></td>
+<td>Cron paths, imports, log files, launchd plists all reference it</td>
+</tr>
+<tr>
+<td>iCloud directory <code>Paul&#39;s Brain/02 Projects/Open Claw/</code></td>
+<td>Obsidian vault path — renaming an iCloud folder ripples through every spec link, every Cursor rule, every wiki backlink</td>
+</tr>
+<tr>
+<td>Twilio number labels &quot;Alfred AU / Alfred US&quot;</td>
+<td>They&#39;re the agent&#39;s phones, not the platform&#39;s</td>
+</tr>
+<tr>
+<td>DOM IDs (<code>#openclaw-model</code>) + JS function <code>renderOpenClawModel()</code></td>
+<td>Internal identifiers — invisible to users, no rename risk worth taking</td>
+</tr>
+</tbody></table>
+<h2>How to verify (quick)</h2>
+<pre><code class="language-bash"># Alfred public health — should say platform: Hermes
+curl -s https://alfred.paultyrrell.dev/health | python3 -c &quot;import json,sys;d=json.load(sys.stdin);print(d[&#39;platform&#39;], d[&#39;tagline&#39;])&quot;
+
+# fi-alfred-chat title
+curl -s https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/ | grep -o &#39;&lt;title&gt;[^&lt;]*&lt;/title&gt;&#39;
+
+# fi-agent-dashboard title + API
+curl -s https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/ | grep -o &#39;&lt;title&gt;[^&lt;]*&lt;/title&gt;&#39;
+curl -s https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/api/config
+
+# Hermes Playbook (GitHub Pages — may take 2-5 min after push)
+curl -s https://ptyrrell.github.io/open-claw-sops/ | grep -o &#39;&lt;title&gt;[^&lt;]*&lt;/title&gt;&#39;
+</code></pre>
+<p>Expected after migration:</p>
+<ul>
+<li><code>platform: Hermes · tagline: Your Hermes assistant</code></li>
+<li><code>&lt;title&gt;Alfred · Hermes&lt;/title&gt;</code></li>
+<li><code>&lt;title&gt;Hermes — Agent Dashboard&lt;/title&gt;</code></li>
+<li><code>&lt;title&gt;All SOPs · Hermes Playbook&lt;/title&gt;</code></li>
+</ul>
+<h2>How to revert (full rollback)</h2>
+<p>If the rebrand needs to be undone:</p>
+<pre><code class="language-bash"># 1. Alfred — restore from .bak-pre-hermes-rebrand
+ssh paultyrrellsilver2022@mac-studio-2
+for f in run.py alfred/config.py alfred/server.py alfred/brain.py \
+         alfred/tools/sops.py alfred/tools/open_claw.py; do
+  cp ~/Alfred/$f.bak-pre-hermes-rebrand ~/Alfred/$f
+done
+launchctl kickstart -k gui/501/com.alfred.server
+
+# 2. Heroku apps — git revert the rebrand commit on each
+for repo in fi-alfred-chat fi-agent-dashboard product-roadmap open-claw-sops; do
+  cd /tmp/fi-work/$repo
+  git pull
+  git revert --no-edit HEAD   # if only the rebrand commit is on top
+  git push origin main
+  [ &quot;$repo&quot; != &quot;open-claw-sops&quot; ] &amp;&amp; [ &quot;$repo&quot; != &quot;product-roadmap&quot; ] &amp;&amp; git push heroku main
+done
+# open-claw-sops needs a rebuild: node scripts/build.mjs &amp;&amp; git commit + push
+
+# 3. SOP templates — already covered by step 2&#39;s git revert
+</code></pre>
+<p>The <code>.bak-pre-hermes-rebrand</code> Alfred backups will live on Mac Studio
+indefinitely (or until explicitly deleted). Delete them when you&#39;re
+confident the rebrand is final:</p>
+<pre><code class="language-bash">rm ~/Alfred/run.py.bak-pre-hermes-rebrand
+rm ~/Alfred/alfred/{config,server,brain}.py.bak-pre-hermes-rebrand
+rm ~/Alfred/alfred/tools/{sops,open_claw}.py.bak-pre-hermes-rebrand
+rm ~/repos/open-claw-sops/templates/{index,_layout}.html.bak-pre-hermes
+</code></pre>
+<h2>Open follow-ups (NOT done in this pass, by design)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Rename Python module <code>alfred/tools/open_claw.py</code> → <code>hermes.py</code> with an
+<code>open_claw</code> import alias for back-compat. (Defer until next breaking
+change to that module — no functional reason to bundle.)</li>
+<li><input disabled="" type="checkbox"> Rename tool <code>list_open_claw_agents</code> → <code>list_hermes_agents</code> with old
+name as alias. (Defer — would force re-training in any saved
+conversation context.)</li>
+<li><input disabled="" type="checkbox"> New favicon if you ever want a Hermes-specific mark (winged sandal,
+caduceus). Current 8-point star is intentionally generic and still
+reads correctly for the messenger god.</li>
+<li><input disabled="" type="checkbox"> Consider whether to register <code>hermes.paultyrrell.dev</code> as a friendly
+alias for <code>alfred.paultyrrell.dev</code>. (No cost or downside — purely
+cosmetic. Punt until you actually want to use it.)</li>
+</ul>
+<h2>Related SOPs</h2>
+<ul>
+<li><code>how-to-get-the-most-out-of-alfred</code> — the Alfred operating manual</li>
+<li><code>sales-orchestrator-fi-map</code> — the most recent app added to the Hermes stack</li>
+<li><code>critical-meetings</code> — Alfred&#39;s never-miss meeting confirmation system</li>
+</ul>
+
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/hermes-rebrand.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP hermes-rebrand: ..."</em></div>
+  </div>
+</article>
+
+</main>
+<footer class="site-footer">
+  Hermes Playbook · v0.2.0 · Built 2026-05-22 22:38 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>
