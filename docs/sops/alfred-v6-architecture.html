@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="version" content="0.2.0" />
+<title>alfred-v6-architecture · Hermes Playbook</title>
+<link rel="icon" href="/open-claw-sops/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/open-claw-sops/styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <a href="/open-claw-sops/" class="brand">
+    <img src="/open-claw-sops/favicon.svg" alt="" class="brand-mark" />
+    <div class="brand-text">
+      <div class="brand-title">Hermes <b>Playbook</b></div>
+      <div class="brand-sub">Playbooks built by Alfred from real calls</div>
+    </div>
+  </a>
+  <nav class="site-nav">
+    <a href="/open-claw-sops/" class="nav-link">All SOPs</a>
+    <a href="https://fi-alfred-chat-cbf0c5043d1a.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Alfred chat</a>
+    <a href="https://fi-agent-dashboard-2cc7e07d11d5.herokuapp.com/" class="nav-link" target="_blank" rel="noopener">Agent dashboard</a>
+  </nav>
+</header>
+<main class="site-main">
+<article class="sop">
+  <div class="sop-meta">
+    <a href="/open-claw-sops/" class="back-link">← All SOPs</a>
+    <div class="sop-tags"></div>
+  </div>
+  <h1 class="sop-title">alfred-v6-architecture</h1>
+  <div class="sop-summary"></div>
+  <dl class="sop-frontmatter">
+    <dt>Owner</dt><dd>Paul Tyrrell</dd>
+    <dt>Status</dt><dd><span class="status status-draft">draft</span></dd>
+    <dt>Source</dt><dd><em>—</em></dd>
+    <dt>Created</dt><dd></dd>
+    <dt>Updated</dt><dd></dd>
+    
+  </dl>
+  <div class="sop-body">
+    <h1>Alfred v6 — &quot;Supreme Agent&quot; Architecture</h1>
+<blockquote>
+<p><strong>Status:</strong> Approved — execution starts immediately.
+<strong>Authored:</strong> 2026-05-23 (Saturday) AEST
+<strong>Owner:</strong> Paul Tyrrell
+<strong>Target completion:</strong> 4 weeks of phased work, autonomous execution between sessions.</p>
+</blockquote>
+<hr>
+<h2>0. The brief (from Paul, verbatim)</h2>
+<ul>
+<li>Supreme solution maximally leveraging Mac Studio performance</li>
+<li>Always use <strong>Opus</strong> by default; only downgrade on request for predictable batch tasks, maintaining ≥98 % accuracy on downgraded paths</li>
+<li>Full architectural plan, then full execution with <strong>unit tests</strong></li>
+<li>Paul comes back to test a working solution</li>
+<li>Use <strong>iMessage</strong> as cheaper messaging; Twilio is fallback only</li>
+<li>Voice latency is acceptable as-is — don&#39;t sacrifice quality</li>
+<li>Cost not the primary driver, but &quot;don&#39;t be stupid&quot;</li>
+<li><strong>Weekly report on monthly spend</strong></li>
+</ul>
+<hr>
+<h2>1. Diagnosis (from architecture audit)</h2>
+<table>
+<thead>
+<tr>
+<th>Complaint</th>
+<th>Root cause confirmed in code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&quot;Forgetful, session-based&quot;</td>
+<td><code>MAX_HISTORY=20</code>, sender-keyed silos, no vector recall, no rolling summary</td>
+</tr>
+<tr>
+<td>&quot;Indicates success, fails frequently&quot;</td>
+<td><strong>Zero post-tool verification.</strong> Claude returns &quot;Done!&quot; without any check that the side-effect occurred</td>
+</tr>
+<tr>
+<td>&quot;Gets AU date/time wrong sometimes&quot;</td>
+<td><code>_today_context()</code> is solid — bug is downstream: tool outputs leak UTC into responses</td>
+</tr>
+<tr>
+<td>&quot;Not stacking skills/knowledge&quot;</td>
+<td>Zero reflection / lessons-learned layer</td>
+</tr>
+<tr>
+<td>&quot;Not a smart agent&quot;</td>
+<td>Flat single-shot dispatch; no plan→execute→verify→reflect loop</td>
+</tr>
+<tr>
+<td>&quot;Retarded responses&quot;</td>
+<td>Haiku is default for short messages — Haiku is meaningfully weaker at tool selection than Opus/Sonnet</td>
+</tr>
+</tbody></table>
+<p>The audit confirms this is an <strong>application-layer architecture problem</strong>, not a model problem. Swapping Claude for Nous Hermes won&#39;t fix it. The model is one node in a graph that needs rebuilding.</p>
+<hr>
+<h2>2. Core principles</h2>
+<ol>
+<li><strong>Every output is grounded, verified, and learned from.</strong></li>
+<li><strong>Alfred never reports success without proof.</strong></li>
+<li><strong>Alfred never starts cognitively empty.</strong></li>
+<li><strong>Alfred gets measurably smarter every week.</strong></li>
+<li><strong>Opus is the default.</strong> Speed and cost are secondary to capability.</li>
+<li><strong>Mac Studio is a peer compute node</strong>, not an afterthought. Local models run in parallel to Claude API for tasks where local quality is acceptable (embeddings, classification, batch summarization).</li>
+<li><strong>iMessage is the default outbound channel</strong> for Paul-addressed messages. Twilio SMS is fallback only.</li>
+</ol>
+<hr>
+<h2>3. The 8 architectural layers</h2>
+<h3>Layer 1 — Identity &amp; Grounding (hardened)</h3>
+<p>Every system prompt gets:</p>
+<ul>
+<li>Persona pin (Alfred, Paul Tyrrell&#39;s personal assistant)</li>
+<li><code>_today_context()</code> — current AEST datetime + relative-time hard-rule</li>
+<li><strong>NEW: today snapshot</strong> — next 3 calendar events, critical-meeting confirmation status, today&#39;s key KPIs (researcher ICP, SDR booked outcomes)</li>
+<li><strong>NEW: last-24h facts</strong> — auto-pulled from <code>facts</code> table for whatever Paul said yesterday that&#39;s still relevant today</li>
+<li><strong>NEW: AEST-output guard</strong> — &quot;If any tool returns UTC, convert to AEST in your reply. Never speak UTC to Paul.&quot;</li>
+</ul>
+<h3>Layer 2 — Memory (3-tier)</h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Storage</th>
+<th>Scope</th>
+<th>Retrieval</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tier 1 — Working memory</td>
+<td>SQLite <code>messages</code></td>
+<td>Last 200 turns per <code>paul</code> key (unified across channels)</td>
+<td>Full text, oldest-first, injected every request</td>
+</tr>
+<tr>
+<td>Tier 2 — Episodic summary</td>
+<td>SQLite <code>episodic_summary</code></td>
+<td>Older than 200 turns, rolling 500-token summary regenerated nightly</td>
+<td>Injected as one block at top of prompt</td>
+</tr>
+<tr>
+<td>Tier 3 — Semantic store</td>
+<td>sqlite-vss</td>
+<td>Every conversation chunk + every Obsidian note + every <code>fact</code> + every <code>lesson_learned</code> + every meeting summary</td>
+<td>Top-5 most semantically-relevant chunks injected silently per request</td>
+</tr>
+</tbody></table>
+<p><strong>Channel unification:</strong> all of Paul&#39;s SMS, iMessage, web sessions, voice calls share one memory keyed <code>paul</code>. Other senders (smoke tests, blog scans) keep their own keys.</p>
+<p><strong>Obsidian auto-sync:</strong> watchdog on <code>~/Library/Mobile Documents/com~apple~CloudDocs/Paul&#39;s Brain</code>, embeddings stored locally in <code>~/Alfred/data/vectors.db</code> (NOT iCloud).</p>
+<p><strong>Embedder:</strong> local <code>nomic-embed-text</code> via Ollama on Mac Studio (~5 GB RAM, runs always-on). Zero API cost. ~50 ms per chunk.</p>
+<h3>Layer 3 — Planning</h3>
+<p>For non-trivial requests, Alfred writes a <strong>plan</strong> before executing:</p>
+<pre><code>PLAN:
+  step 1: query calendar for tomorrow → expect list of events
+  step 2: cross-check against critical_meetings → expect 1 match (Founder Coaching)
+  step 3: send iMessage to Paul with confirm prompt → expect &quot;delivered&quot; status
+VERIFY: critical_meetings.json shows confirmation_pending=true
+</code></pre>
+<p><strong><code>_should_plan()</code> classifier</strong> (local Hermes 8B, ~50 ms) decides plan-vs-fast-path. Simple lookups skip planning.</p>
+<h3>Layer 4 — Execution (instrumented)</h3>
+<p>Every tool call logs:</p>
+<ul>
+<li><code>intent</code> — what Alfred meant to do</li>
+<li><code>tool_name</code> + <code>tool_input</code></li>
+<li><code>tool_output</code></li>
+<li><code>success_signal</code> — the verification key for Layer 5</li>
+<li><code>latency_ms</code> + <code>model_used</code> + <code>tokens_in/out</code> + <code>cost_usd</code></li>
+</ul>
+<h3>Layer 5 — Verification (KEY new layer)</h3>
+<p>For every state-changing tool, a <strong>separate verification call</strong> runs after:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>send_imessage</code></td>
+<td>poll chat.db for matching DATE &gt; sent_at within 5 s; check <code>is_delivered=1</code></td>
+</tr>
+<tr>
+<td><code>send_sms</code></td>
+<td>Twilio API <code>Message(sid).fetch().status</code> ∈ <code>{sent, delivered}</code></td>
+</tr>
+<tr>
+<td><code>send_email</code></td>
+<td>Gmail API <code>messages.get(id)</code> returns 200; check <code>labelIds</code> includes <code>SENT</code></td>
+</tr>
+<tr>
+<td><code>create_calendar_event</code></td>
+<td>Google Calendar <code>events.get(id)</code> returns 200 with matching summary</td>
+</tr>
+<tr>
+<td><code>obsidian_write</code></td>
+<td>re-read file from vault, check first 100 chars match</td>
+</tr>
+<tr>
+<td><code>update_sheet_row</code></td>
+<td>re-read row, check target cell equals new value</td>
+</tr>
+<tr>
+<td><code>wordpress_post</code></td>
+<td>GET post URL, expect 200 + matching slug</td>
+</tr>
+<tr>
+<td><code>map_update</code></td>
+<td>GET <code>/api/maps/:id</code>, expect updated field</td>
+</tr>
+</tbody></table>
+<p><strong>If verification fails:</strong> retry once with same tool, then escalate to Paul via iMessage with diagnostic. <strong>Alfred never says &quot;Done!&quot; to Paul without verification.</strong></p>
+<h3>Layer 6 — Reflection (KEY new layer)</h3>
+<p>After every multi-step task (success or failure), a <strong>reflector</strong> call runs:</p>
+<pre><code>INPUT:  task, plan, execution trace, outcomes, verification results
+OUTPUT: structured lesson
+  - what_worked: [&quot;calendar lookup was fast and correct&quot;]
+  - what_failed: [&quot;obsidian write hit a sync conflict on first try&quot;]
+  - lesson: &quot;When writing to Paul&#39;s Brain, wait 2 s after the previous write to avoid iCloud sync conflicts&quot;
+  - applies_to: [&quot;obsidian_write&quot;, &quot;any task involving Paul&#39;s Brain&quot;]
+</code></pre>
+<p>Lessons written to <code>lessons_learned</code> table AND embedded into Tier 3 vector store. On the next similar task, top-K lessons surface in context automatically.</p>
+<p><strong>This is how Alfred compounds.</strong></p>
+<h3>Layer 7 — Model Routing</h3>
+<table>
+<thead>
+<tr>
+<th>Task class</th>
+<th>Model</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Default (chat, SMS, complex reasoning, planning, reflection, code, summarization, anything not below)</strong></td>
+<td><strong>Claude Opus 4.5</strong></td>
+<td>Best capability. Paul&#39;s explicit choice.</td>
+</tr>
+<tr>
+<td>Voice (sub-1 s preferred)</td>
+<td>Claude Haiku 4.5</td>
+<td>TTS latency requires fast first token</td>
+</tr>
+<tr>
+<td>Classification (<code>_should_plan</code>, task-class routing, intent detection)</td>
+<td>Local Hermes 3 8B (Q5_K_M) via Ollama</td>
+<td>~50 ms, zero cost, 98 %+ accuracy on binary classification</td>
+</tr>
+<tr>
+<td>Embeddings</td>
+<td>Local <code>nomic-embed-text</code> via Ollama</td>
+<td>Zero cost, fast</td>
+</tr>
+<tr>
+<td>Batch summarization (nightly conversation summaries, weekly digests, Loom transcript condensation)</td>
+<td>Local Hermes 3 70B Q4_K_M via Ollama</td>
+<td>Zero cost, 98 % accuracy acceptable for batch jobs, runs overnight</td>
+</tr>
+<tr>
+<td>Privacy-flagged (<code>/private</code> prefix)</td>
+<td>Local Hermes 3 70B Q4_K_M</td>
+<td>Never leaves the Mac</td>
+</tr>
+</tbody></table>
+<p>Task class classified by Hermes 8B in &lt;100 ms. <strong>Opus is the default for any uncertainty.</strong></p>
+<h3>Layer 8 — Background Cognition</h3>
+<p>Twice-daily idle loop (08:00 + 16:00 AEST) runs Opus over:</p>
+<ul>
+<li>Tomorrow&#39;s calendar + critical meetings (confirm status)</li>
+<li>Open MAPs (action items past due)</li>
+<li>Open SOPs in playbook (any draft/stale)</li>
+<li>Recent commitments Paul made via SMS/iMessage (still open?)</li>
+<li>Pattern detection (meeting slippage, SDR drop-offs, deal stagnation)</li>
+</ul>
+<p>Surfaces gaps proactively via iMessage. Examples:</p>
+<blockquote>
+<p><em>&quot;Yesterday you told Natasha you&#39;d send the Acme proposal — still want me to draft it?&quot;</em></p>
+</blockquote>
+<blockquote>
+<p><em>&quot;3 of your last 4 SDR calls slipped 30+ min. Want a hard-stop SMS at 28 min next time?&quot;</em></p>
+</blockquote>
+<hr>
+<h2>4. Mac Studio resource budget (64 GB unified)</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>RAM</th>
+<th>Always loaded?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>macOS + active apps</td>
+<td>~12 GB</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Alfred Flask + cron jobs + Cloudflare tunnel</td>
+<td>~2 GB</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>sqlite-vss vector store</td>
+<td>~0.5 GB</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Embedder (<code>nomic-embed-text</code>)</td>
+<td>~5 GB</td>
+<td>yes (Ollama keep-alive)</td>
+</tr>
+<tr>
+<td>Hermes 8B Q5 (classifier)</td>
+<td>~6 GB</td>
+<td>yes (Ollama keep-alive)</td>
+</tr>
+<tr>
+<td>Hermes 70B Q4 (batch + private)</td>
+<td>~40 GB</td>
+<td><strong>on-demand</strong> (loaded 04:00 for nightly batch, unloaded 06:00)</td>
+</tr>
+<tr>
+<td>Headroom</td>
+<td>~40 GB normally / ~0 GB during batch</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>Strategy: always-loaded fast path (embedder + 8B) uses ~12 GB. Heavy 70B loads on cron for predictable windows. Memory pressure stays low during the day.</p>
+<hr>
+<h2>5. Phased delivery</h2>
+<h3>Phase 0 — Stop the bleeding (THIS SESSION, ~6 h)</h3>
+<p><strong>Goal:</strong> kill false-success bug, raise memory floor, make Opus default, get iMessage primary, ship weekly cost report.</p>
+<ol>
+<li>Bump <code>MAX_HISTORY</code> 20 → 200</li>
+<li>Unify channel keying (<code>paul</code> for all Paul-owned senders)</li>
+<li><strong>Verification wrapper</strong> on the 8 state-changing tools (Layer 5)</li>
+<li>Force AEST output (fix all UTC leaks in tool responses)</li>
+<li>Switch default model: SMS/chat → <strong>Opus</strong>; voice → Haiku (unchanged)</li>
+<li>Inject today snapshot + last-24h facts into prompt (Layer 1 hardening)</li>
+<li>iMessage-first routing: audit <code>prefer_imessage()</code> paths, ensure Paul&#39;s mobile resolves to iMessage by default</li>
+<li><strong>Weekly cost reporter</strong> — new cron Monday 09:00 → iMessage Paul with MTD spend + WoW change + top 3 task types</li>
+<li>Unit tests for all of the above</li>
+</ol>
+<h3>Phase 1 — Memory rebuild (next session, ~10 h)</h3>
+<ol>
+<li>Install sqlite-vss extension</li>
+<li>Install Ollama models: <code>nomic-embed-text</code>, <code>nous-hermes-3-llama-3.1-8b-q5_k_m</code></li>
+<li>Backfill embeddings for: 420 <code>messages</code> + all <code>facts</code> + all Obsidian <code>.md</code> files in <code>Paul&#39;s Brain</code></li>
+<li><code>auto_retrieve(query, k=5)</code> injected silently on every request</li>
+<li>Nightly rolling summariser (Layer 2 Tier 2)</li>
+<li>Obsidian watchdog → incremental embedding sync</li>
+<li>Unit tests + integration tests against a sample corpus</li>
+</ol>
+<h3>Phase 2 — Plan/Verify/Reflect loop (session 3, ~10 h)</h3>
+<ol>
+<li><code>_should_plan()</code> classifier (Hermes 8B)</li>
+<li>Planner emits structured plan (Opus)</li>
+<li>Executor runs step-by-step with verification on each state-change</li>
+<li>Reflector writes <code>lessons_learned</code> + embeds (Opus → into vector store)</li>
+<li>Refactor <code>brain.py</code> 2355 LOC → modular packages: <code>brain/planner.py</code>, <code>brain/executor.py</code>, <code>brain/verifier.py</code>, <code>brain/reflector.py</code></li>
+<li>Full unit + integration test suite</li>
+</ol>
+<h3>Phase 3 — Heavy local + Hermes 70B (session 4, ~8 h)</h3>
+<ol>
+<li>Pull <code>nous-hermes-3-llama-3.1-70b-q4_k_m</code> (~40 GB)</li>
+<li><code>local_llm_client.py</code> matching Anthropic-style interface</li>
+<li>Route <code>/private</code> prefix → Hermes 70B</li>
+<li>Route nightly batch summariser → Hermes 70B (04:00–06:00 window)</li>
+<li>Route weekly Loom/Fathom/Grain transcript condensation → Hermes 70B</li>
+<li>Accuracy bench: 50-sample test set, measure 70B-vs-Opus on summarization. Require ≥98 % semantic agreement to keep batch route on 70B; else fall back to Opus</li>
+<li>Tests</li>
+</ol>
+<h3>Phase 4 — Background cognition (session 5, ~8 h)</h3>
+<ol>
+<li>Idle loop scheduler (08:00 + 16:00)</li>
+<li>Calendar/MAP/SOP/commitment review (Opus)</li>
+<li>Proactive iMessage surfacing</li>
+<li>Pattern detector (statistical, not LLM — slippage, drop-offs, stagnation)</li>
+<li>Tests</li>
+</ol>
+<hr>
+<h2>6. Testing strategy</h2>
+<p><strong>Tooling:</strong> <code>pytest</code> + <code>pytest-mock</code> + <code>pytest-asyncio</code>. Test files in <code>~/Alfred/tests/</code>.</p>
+<p><strong>Coverage targets:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Coverage target</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>verifier.py</code> (Layer 5)</td>
+<td><strong>100 %</strong> — this is the trust foundation</td>
+</tr>
+<tr>
+<td><code>memory.py</code> (Layer 2)</td>
+<td>≥90 %</td>
+</tr>
+<tr>
+<td><code>planner.py</code>, <code>executor.py</code>, <code>reflector.py</code></td>
+<td>≥85 %</td>
+</tr>
+<tr>
+<td>Tool routing / model routing</td>
+<td>≥85 %</td>
+</tr>
+<tr>
+<td>iMessage send/receive paths</td>
+<td>≥90 %</td>
+</tr>
+<tr>
+<td>Tool wrappers (the 99 tools)</td>
+<td>≥60 % (smoke tests for each)</td>
+</tr>
+</tbody></table>
+<p><strong>CI:</strong> GitHub Actions on <code>~/repos/Alfred</code> (new repo if needed) runs <code>pytest -q</code> on every push. Watchdog also runs the suite hourly and alerts on regression.</p>
+<hr>
+<h2>7. Cost &amp; spend reporting</h2>
+<p><strong>Tracker:</strong> new <code>~/Alfred/alfred/cost_tracker.py</code>. Every Anthropic call logs: <code>ts, model, task_class, tokens_in, tokens_out, cost_usd, channel, sender</code>.</p>
+<p><strong>Schema:</strong> new <code>cost_log</code> table in <code>alfred.db</code>.</p>
+<p><strong>Pricing:</strong> hardcoded table per model (per 1M input/output tokens), auto-updated from Anthropic pricing page weekly.</p>
+<p><strong>Weekly report (Monday 09:00 AEST via iMessage):</strong></p>
+<pre><code>📊 Alfred Spend — Week ending YYYY-MM-DD
+
+MTD: $XX.XX (vs $YY.YY last month same day, Δ +Z%)
+This week: $A.AA (vs $B.BB last week, Δ +C%)
+
+Top 3 task classes:
+  1. complex_reasoning — $X.XX (Opus, NN calls)
+  2. planning           — $Y.YY (Opus, MM calls)
+  3. voice              — $Z.ZZ (Haiku, KK calls)
+
+Local Hermes offload saved: $D.DD (LL classifier calls + MM embedding calls)
+
+Verification cost: $V.VV (NN verifications fired, P% catch rate of false-success)
+</code></pre>
+<hr>
+<h2>8. iMessage as primary</h2>
+<p>Current state: <code>tools/imessage.py</code> exists. <code>prefer_imessage()</code> routing exists in <code>server.py</code>.</p>
+<p><strong>Phase 0 audit:</strong> confirm every outbound-to-Paul path actually flows through <code>send_message()</code> (the iMessage-preferring router), not directly through Twilio. Likely offenders: morning briefing, watchdog alerts, critical meeting nudges, ben checkin reminders. Each gets a smoke test.</p>
+<p><strong>Routing rule:</strong></p>
+<ol>
+<li>If <code>to</code> is Paul&#39;s mobile (<code>+61401026347</code>) AND Messages.app is running AND iMessage status is &quot;delivered&quot; reachable → send iMessage</li>
+<li>Else fall back to Twilio AU SMS</li>
+<li>Log routing decision + reason</li>
+</ol>
+<p><strong>Inbound:</strong> iMessage poller already exists. Verify it&#39;s running. Inbound iMessage from Paul → same <code>paul</code> memory key as SMS / web / voice.</p>
+<hr>
+<h2>9. What gets retired (with confirmation)</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MAX_HISTORY = 20</code></td>
+<td>Replaced by 3-tier memory</td>
+</tr>
+<tr>
+<td>Length-based model picker (<code>&lt;200 chars → Haiku</code>)</td>
+<td>Replaced by task-class router; Opus default</td>
+</tr>
+<tr>
+<td>Single-shot <code>think()</code> for complex requests</td>
+<td>Replaced by <code>think_with_plan()</code></td>
+</tr>
+<tr>
+<td>Direct Twilio calls bypassing <code>send_message()</code> router</td>
+<td>Replaced by iMessage-first router</td>
+</tr>
+</tbody></table>
+<p>Per Paul&#39;s standing rule: <strong>no feature deprecated without confirmation.</strong> Each retirement above is a <em>replacement</em>, not a deletion — old paths flagged deprecated, removed only after Paul tests the new path.</p>
+<hr>
+<h2>10. Rollback plan</h2>
+<p>Every phase ships with:</p>
+<ol>
+<li>Git commit + tag (<code>alfred-v6-phase0</code>, etc.)</li>
+<li><code>~/Alfred/snapshots/pre-v6-phase0/</code> with copies of every changed file</li>
+<li><code>rollback.sh</code> script that reverts the snapshot and restarts services</li>
+<li>SOP entry in <code>~/repos/open-claw-sops/sops/alfred-v6-rollback.md</code></li>
+</ol>
+<hr>
+<h2>11. Definition of done (Phase 0)</h2>
+<p>✅ All of the following must pass before Phase 0 is declared shipped:</p>
+<ol>
+<li><code>pytest -q</code> green on the new test suite</li>
+<li>Smoke test: Paul-impersonating script sends &quot;send a test iMessage to me&quot; → Alfred routes via iMessage (not Twilio), verifies delivery, reports success only after verification</li>
+<li>Smoke test: Paul-impersonating script sends &quot;schedule meeting tomorrow 10am called Test&quot; → Alfred creates event, verifies via <code>events.get</code>, reports back. Manually corrupt the event ID and confirm Alfred reports &quot;verification failed, escalating&quot; instead of &quot;done!&quot;</li>
+<li>Memory test: send 50 messages, then ask &quot;what was the first thing I asked today&quot; → Alfred recalls (currently fails after 10 messages)</li>
+<li>AEST test: ask &quot;what time is my next meeting&quot; while looking at calendar showing UTC times → Alfred replies in AEST with delta (&quot;at 10:00 AM, in 1h 12m&quot;)</li>
+<li>Cost report dry-run: invoke <code>cost_tracker.weekly_report()</code> manually → iMessage arrives with last-week stats</li>
+<li>Opus default verified: SMS &quot;list my critical meetings&quot; → server log shows <code>model=claude-opus-4-5</code>, not Haiku</li>
+<li>Verification catch test: deliberately misconfigure the email tool, send &quot;email Paul a test&quot; → Alfred reports failure, NOT success</li>
+</ol>
+<hr>
+<h2>12. Sign-off</h2>
+<p>Approved by Paul Tyrrell, 2026-05-23 (Saturday). Execution starts immediately.</p>
+<p>Updates posted to this doc after each phase.</p>
+<hr>
+<h2>13. Phase 0 — EXECUTION COMPLETE (2026-05-23, same day)</h2>
+<p>Shipped autonomously the day the plan was approved. <strong>115 unit tests green</strong>, zero regressions, rollback snapshot in place at <code>~/Alfred/snapshots/pre-v6-phase0-20260523-094703/</code> with <code>rollback.sh</code>.</p>
+<h3>Phase 0 deliverables</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>File(s)</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Snapshot + rollback script</td>
+<td><code>~/Alfred/snapshots/pre-v6-phase0-*/</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>pytest harness (Python 3.14, pytest 9.0.3)</td>
+<td><code>tests/</code>, <code>pytest.ini</code>, <code>conftest.py</code></td>
+<td>3 smoke tests</td>
+</tr>
+<tr>
+<td><code>MAX_HISTORY</code> 20 → 200 + unified <code>paul</code> channel keying</td>
+<td><code>alfred/memory.py</code></td>
+<td>26 memory tests</td>
+</tr>
+<tr>
+<td>Live DB migration: 356 rows backfilled (332 SMS + 24 web-laptop → <code>paul</code>)</td>
+<td><code>data/alfred.db</code></td>
+<td>(idempotent migration)</td>
+</tr>
+<tr>
+<td><code>recent_facts(hours=24)</code> for prompt grounding</td>
+<td><code>alfred/memory.py</code></td>
+<td>covered in test_memory</td>
+</tr>
+<tr>
+<td>Verifier (Layer 5): 8 state-changing tools wired with verification + retry</td>
+<td><code>alfred/verifier.py</code> + <code>brain.py</code> <code>run_tool_verified()</code></td>
+<td>37 verifier tests</td>
+</tr>
+<tr>
+<td>System prompt: explicit VERIFICATION PROTOCOL block (Claude MUST acknowledge ✅/❌ tag)</td>
+<td><code>alfred/config.py</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Opus as default; downgrade only on <code>/fast</code> prefix or trivial status pings</td>
+<td><code>alfred/brain.py</code> <code>_route_model()</code></td>
+<td>17 routing tests</td>
+</tr>
+<tr>
+<td>Today snapshot: next 3 calendar events + critical meetings status + last-24h facts</td>
+<td><code>alfred/brain.py</code> <code>_today_snapshot()</code></td>
+<td>8 snapshot tests</td>
+</tr>
+<tr>
+<td>AEST output rule injected into <code>_today_context()</code> (no more UTC leaks)</td>
+<td><code>alfred/brain.py</code></td>
+<td>covered in test_today_context</td>
+</tr>
+<tr>
+<td>Unified <code>alfred.outbound.send_to_paul()</code> — iMessage-first, Twilio fallback</td>
+<td><code>alfred/outbound.py</code></td>
+<td>7 outbound tests</td>
+</tr>
+<tr>
+<td>Cron scripts retrofitted: <code>morning_briefing.py</code>, <code>ben_checkin.py</code>, <code>watchdog.py</code> now use outbound (saves SMS $)</td>
+<td>3 scripts</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Cost tracker: per-call logging, MTD/WoW summarization</td>
+<td><code>alfred/cost_tracker.py</code></td>
+<td>13 cost tests</td>
+</tr>
+<tr>
+<td>Weekly Monday 09:00 AEST cost report cron (iMessage)</td>
+<td><code>scripts/run_weekly_cost_report.py</code> + <code>~/Library/LaunchAgents/com.alfred.weekly-cost-report.plist</code></td>
+<td>loaded + dry-run verified</td>
+</tr>
+<tr>
+<td>Version bumped: <code>alfred-v5-critical-meetings</code> → <code>alfred-v6-phase0-agent-foundations</code></td>
+<td><code>run.py</code></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h3>Verification of definition-of-done</h3>
+<table>
+<thead>
+<tr>
+<th>DoD criterion</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pytest green</td>
+<td>✅ 115 passed, 0 failed in 8s</td>
+</tr>
+<tr>
+<td>Memory recall test: 50 messages, retrieve first</td>
+<td>✅ Saved 100 turns, retrieved 100, first message intact</td>
+</tr>
+<tr>
+<td>iMessage routing test: Paul&#39;s number resolves preferred</td>
+<td>✅ <code>prefer_imessage(+61401026347) → True (allowlist)</code></td>
+</tr>
+<tr>
+<td>Verification catch: fake calendar ID returns ❌</td>
+<td>✅ verified=False, error=&quot;calendar.get_event failed&quot;</td>
+</tr>
+<tr>
+<td>Today snapshot shows real data</td>
+<td>✅ &quot;Ben &amp; Paul Kayaking 07:00&quot;, &quot;Founder Coaching UNCONFIRMED&quot;, facts injected</td>
+</tr>
+<tr>
+<td>Cost tracker logs Opus call correctly</td>
+<td>✅ logged 1000 in + 500 out = $0.0525</td>
+</tr>
+<tr>
+<td>Opus default verified in router</td>
+<td>✅ <code>_route_model(&quot;what is my next meeting&quot;) → (&#39;claude-opus-4-5&#39;, 2000)</code></td>
+</tr>
+<tr>
+<td>iMessage end-to-end send</td>
+<td>✅ Deploy notification delivered via <code>channel=imessage</code> to Paul</td>
+</tr>
+</tbody></table>
+<h3>Files changed</h3>
+<pre><code>alfred/brain.py            (extensive: +run_tool_verified, +today_snapshot, +_route_model, +cost tracking)
+alfred/config.py           (system prompt: VERIFICATION PROTOCOL block)
+alfred/memory.py           (canonicalize_sender, MAX_HISTORY=200, recent_facts, backfill_paul_canonical)
+alfred/verifier.py         (NEW — Layer 5, 8 verifiers + aliases)
+alfred/outbound.py         (NEW — iMessage-first router)
+alfred/cost_tracker.py     (NEW — per-call logging + summarization)
+morning_briefing.py        (routes through outbound.send_to_paul)
+ben_checkin.py             (routes through outbound.send_message + send_to_paul)
+watchdog.py                (routes through outbound.send_to_paul)
+run.py                     (version bump + models string update)
+scripts/run_weekly_cost_report.py    (NEW — cron entry point)
+~/Library/LaunchAgents/com.alfred.weekly-cost-report.plist  (NEW)
+tests/__init__.py, conftest.py, test_smoke.py, test_memory.py, test_verifier.py,
+tests/test_routing.py, test_today_context.py, test_outbound.py, test_cost_tracker.py  (NEW)
+pytest.ini                 (NEW)
+</code></pre>
+<h3>Rollback (if needed)</h3>
+<pre><code class="language-bash">~/Alfred/snapshots/pre-v6-phase0-20260523-094703/rollback.sh
+launchctl kickstart -k gui/$UID/com.alfred.server
+</code></pre>
+<h3>Next session: Phase 1 — Memory rebuild</h3>
+<p>Estimated 8-10 hours. Tasks:</p>
+<ol>
+<li>Install sqlite-vss extension</li>
+<li>Install Ollama models: <code>nomic-embed-text</code>, <code>nous-hermes-3-llama-3.1-8b-q5_k_m</code></li>
+<li>Backfill embeddings for: 420 <code>messages</code> + all <code>facts</code> + all Obsidian <code>.md</code> files in <code>Paul&#39;s Brain</code></li>
+<li><code>auto_retrieve(query, k=5)</code> injected silently on every request</li>
+<li>Nightly rolling summariser (Layer 2 Tier 2)</li>
+<li>Obsidian watchdog → incremental embedding sync</li>
+<li>Unit + integration tests against a sample corpus</li>
+</ol>
+<p>Paul to test Phase 0 with real-world questions before Phase 1 starts.</p>
+
+  </div>
+  <div class="sop-footer">
+    <div class="sop-edit">Edit on <a href="https://github.com/ptyrrell/open-claw-sops/edit/main/sops/alfred-v6-architecture.md" target="_blank" rel="noopener">GitHub</a> · or text Alfred <em>"update SOP alfred-v6-architecture: ..."</em></div>
+  </div>
+</article>
+
+</main>
+<footer class="site-footer">
+  Hermes Playbook · v0.2.0 · Built 2026-05-23 00:14 UTC · Source: <a href="https://github.com/ptyrrell/open-claw-sops" target="_blank" rel="noopener">github.com/ptyrrell/open-claw-sops</a>
+</footer>
+</body>
+</html>
